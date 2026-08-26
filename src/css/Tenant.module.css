@@ -1,0 +1,468 @@
+.main {
+  width: 100%;
+  min-height: 100%;
+
+  background-color: #f5f9fe;
+
+  font-family: "DM Sans", sans-serif;
+}
+
+.content {
+  width: 100%;
+  max-width: 1400px;
+
+  margin: 0 auto;
+
+  padding: 32px;
+}
+
+/* =========================================
+   HEADING
+========================================= */
+
+.heading {
+  margin-bottom: 28px;
+}
+
+.heading h1 {
+  margin: 0;
+
+  color: #0f172a;
+
+  font-size: 28px;
+  line-height: 1.2;
+
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+.heading p {
+  margin-top: 8px;
+
+  color: #64748b;
+
+  font-size: 14px;
+  line-height: 1.5;
+
+  font-weight: 400;
+}
+
+/* =========================================
+   TOOLBAR
+========================================= */
+
+.toolbar {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  margin-bottom: 24px;
+}
+
+.searchWrapper {
+  position: relative;
+
+  flex: 1;
+  max-width: 420px;
+}
+
+.searchIcon {
+  position: absolute;
+
+  left: 14px;
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  color: #64748b;
+
+  pointer-events: none;
+}
+
+.searchInput {
+  width: 100%;
+  height: 42px;
+
+  padding: 0 14px 0 40px;
+
+  border: 1px solid #dce9f7;
+  border-radius: 10px;
+
+  outline: none;
+
+  background-color: #ffffff;
+
+  color: #0f172a;
+
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.searchInput::placeholder {
+  color: #94a3b8;
+}
+
+.searchInput:focus {
+  border-color: #3b82f6;
+
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.filterButton {
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  padding: 0 16px;
+
+  border: 1px solid #dce9f7;
+  border-radius: 10px;
+
+  background-color: #ffffff;
+
+  color: #475569;
+
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease;
+}
+
+.filterButton:hover {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+/* =========================================
+   TENANT GRID
+========================================= */
+
+.tenantGrid {
+  display: grid;
+
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  gap: 20px;
+}
+
+/* =========================================
+   TENANT CARD
+========================================= */
+
+.tenantCard {
+  min-width: 0;
+
+  background-color: #ffffff;
+
+  border: 1px solid #dce9f7;
+  border-radius: 10px;
+
+  padding: 20px;
+
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.02);
+
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    transform 150ms ease;
+}
+
+.tenantCard:hover {
+  border-color: #cbdcf0;
+
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+
+  transform: translateY(-1px);
+}
+
+/* =========================================
+   CARD HEADER
+========================================= */
+
+.cardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 12px;
+}
+
+.tenantIdentity {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+}
+
+.avatar {
+  width: 42px;
+  height: 42px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 9999px;
+
+  background-color: #dbeafe;
+
+  color: #3b82f6;
+
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.tenantName {
+  overflow: hidden;
+
+  color: #0f172a;
+
+  font-size: 15px;
+  line-height: 1.4;
+
+  font-weight: 600;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.apartment {
+  margin-top: 3px;
+
+  color: #64748b;
+
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.moreButton {
+  width: 32px;
+  height: 32px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 8px;
+
+  background: transparent;
+
+  color: #64748b;
+
+  cursor: pointer;
+
+  transition:
+    color 150ms ease,
+    background-color 150ms ease;
+}
+
+.moreButton:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+/* =========================================
+   CONTACT DETAILS
+========================================= */
+
+.contactDetails {
+  display: flex;
+  flex-direction: column;
+
+  gap: 9px;
+
+  margin-top: 20px;
+
+  padding-bottom: 18px;
+
+  border-bottom: 1px solid #edf2f7;
+}
+
+.contactRow {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+
+  color: #64748b;
+
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.contactRow svg {
+  flex-shrink: 0;
+}
+
+.truncate {
+  min-width: 0;
+
+  overflow: hidden;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* =========================================
+   PAYMENT
+========================================= */
+
+.paymentRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  padding: 18px 0;
+}
+
+.rentLabel {
+  color: #64748b;
+
+  font-size: 12px;
+  line-height: 1.4;
+
+  font-weight: 400;
+}
+
+.rentAmount {
+  margin-top: 4px;
+
+  color: #0f172a;
+
+  font-size: 18px;
+  line-height: 1.3;
+
+  font-weight: 600;
+}
+
+.statusPaid,
+.statusPending,
+.statusOverdue {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 5px 10px;
+
+  border-radius: 9999px;
+
+  font-size: 12px;
+  line-height: 1.3;
+
+  font-weight: 500;
+
+  white-space: nowrap;
+}
+
+.statusPaid {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+.statusPending {
+  background-color: #fef3c7;
+  color: #b45309;
+}
+
+.statusOverdue {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+/* =========================================
+   LEASE
+========================================= */
+
+.leaseInfo {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  padding-top: 16px;
+
+  border-top: 1px solid #edf2f7;
+
+  color: #64748b;
+
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.leaseInfo svg {
+  flex-shrink: 0;
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 1100px) {
+  .tenantGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .content {
+    padding: 24px 18px;
+  }
+
+  .tenantGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .toolbar {
+    align-items: stretch;
+  }
+
+  .searchWrapper {
+    max-width: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .content {
+    padding: 20px 14px;
+  }
+
+  .heading h1 {
+    font-size: 24px;
+  }
+
+  .toolbar {
+    flex-direction: column;
+  }
+
+  .filterButton {
+    width: 100%;
+  }
+}

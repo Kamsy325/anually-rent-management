@@ -1,0 +1,346 @@
+.profilePage {
+  width: 100%;
+  min-height: 100%;
+
+  background-color: #f5f9fe;
+
+  font-family: "DM Sans", sans-serif;
+}
+
+.profileContainer {
+  width: 100%;
+  max-width: 1100px;
+
+  margin: 0 auto;
+
+  padding: 32px;
+}
+
+/* =========================================
+   PAGE HEADER
+========================================= */
+
+.pageHeader {
+  margin-bottom: 28px;
+}
+
+.pageTitle {
+  margin: 0;
+
+  color: #0f172a;
+
+  font-size: 28px;
+  line-height: 1.2;
+
+  font-weight: 600;
+
+  letter-spacing: -0.025em;
+}
+
+.pageDescription {
+  margin-top: 8px;
+
+  color: #64748b;
+
+  font-size: 14px;
+  line-height: 1.5;
+
+  font-weight: 400;
+}
+
+/* =========================================
+   PROFILE CARD
+========================================= */
+
+.profileCard {
+  width: 100%;
+
+  background-color: #ffffff;
+
+  border: 1px solid #dce9f7;
+  border-radius: 10px;
+
+  padding: 28px;
+
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.02);
+}
+
+/* =========================================
+   CARD HEADER
+========================================= */
+
+.cardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding-bottom: 24px;
+
+  border-bottom: 1px solid #edf2f7;
+}
+
+.cardTitle {
+  margin: 0;
+
+  color: #0f172a;
+
+  font-size: 18px;
+  line-height: 1.4;
+
+  font-weight: 600;
+
+  letter-spacing: -0.015em;
+}
+
+.cardDescription {
+  margin-top: 5px;
+
+  color: #64748b;
+
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.editButton {
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  height: 36px;
+
+  padding: 0 14px;
+
+  border: 1px solid #dce9f7;
+  border-radius: 8px;
+
+  background-color: #ffffff;
+
+  color: #475569;
+
+  font-family: "DM Sans", sans-serif;
+
+  font-size: 13px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition:
+    color 150ms ease,
+    background-color 150ms ease,
+    border-color 150ms ease;
+}
+
+.editButton:hover {
+  color: #3b82f6;
+
+  background-color: #eff6ff;
+
+  border-color: #bfdbfe;
+}
+
+/* =========================================
+   PROFILE IDENTITY
+========================================= */
+
+.profileIdentity {
+  display: flex;
+  align-items: center;
+
+  gap: 16px;
+
+  padding: 28px 0;
+}
+
+.avatar {
+  width: 64px;
+  height: 64px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 9999px;
+
+  background-color: #dbeafe;
+
+  color: #3b82f6;
+
+  font-size: 22px;
+  line-height: 1;
+
+  font-weight: 600;
+}
+
+.identityDetails {
+  min-width: 0;
+}
+
+.profileName {
+  color: #0f172a;
+
+  font-size: 18px;
+  line-height: 1.4;
+
+  font-weight: 600;
+}
+
+.companyName {
+  margin-top: 3px;
+
+  color: #64748b;
+
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.location {
+  margin-top: 7px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 5px;
+
+  color: #64748b;
+
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.location svg {
+  flex-shrink: 0;
+
+  color: #94a3b8;
+}
+
+/* =========================================
+   DETAILS GRID
+========================================= */
+
+.detailsGrid {
+  display: grid;
+
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  column-gap: 40px;
+  row-gap: 24px;
+
+  padding: 24px 0;
+
+  border-top: 1px solid #edf2f7;
+  border-bottom: 1px solid #edf2f7;
+}
+
+.detailItem {
+  min-width: 0;
+}
+
+.detailLabel {
+  display: block;
+
+  color: #64748b;
+
+  font-size: 12px;
+  line-height: 1.4;
+
+  font-weight: 500;
+}
+
+.detailValue {
+  margin-top: 6px;
+
+  color: #0f172a;
+
+  font-size: 14px;
+  line-height: 1.5;
+
+  font-weight: 500;
+
+  overflow-wrap: anywhere;
+}
+
+/* =========================================
+   BIO
+========================================= */
+
+.bioSection {
+  padding-top: 24px;
+}
+
+.bioText {
+  max-width: 800px;
+
+  margin-top: 7px;
+
+  color: #475569;
+
+  font-size: 14px;
+  line-height: 1.7;
+
+  font-weight: 400;
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 700px) {
+  .profileContainer {
+    padding: 24px 18px;
+  }
+
+  .profileCard {
+    padding: 22px;
+  }
+
+  .detailsGrid {
+    grid-template-columns: 1fr;
+
+    row-gap: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .profileContainer {
+    padding: 20px 14px;
+  }
+
+  .pageTitle {
+    font-size: 24px;
+  }
+
+  .profileCard {
+    padding: 18px;
+  }
+
+  .cardHeader {
+    align-items: center;
+  }
+
+  .profileIdentity {
+    padding: 22px 0;
+  }
+
+  .avatar {
+    width: 54px;
+    height: 54px;
+
+    font-size: 19px;
+  }
+
+  .profileName {
+    font-size: 16px;
+  }
+
+  .editButton {
+    padding: 0 10px;
+  }
+}

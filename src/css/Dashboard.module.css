@@ -1,0 +1,391 @@
+.dashboard {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  background-color: #f5f9fe;
+  font-family: "DM Sans", sans-serif;
+  color: #0f172a;
+}
+
+.dashboardContent {
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* =========================
+   Page Heading
+========================= */
+
+.pageTitle {
+  margin: 0;
+  color: #0f172a;
+  font-family: "DM Sans", sans-serif;
+  font-size: 30px;
+  line-height: 2.25rem;
+  font-weight: 600;
+}
+
+.pageDescription {
+  margin: 4px 0 0;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.25rem;
+}
+
+/* =========================
+   Analytics
+========================= */
+
+.analyticsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.analyticsCard {
+  background-color: #ffffff;
+  border: 1px solid #dce9f7;
+  border-radius: 16px;
+  padding: 24px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.analyticsHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.mutedText {
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.25rem;
+  font-weight: 500;
+}
+
+.analyticsIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 20px;
+  height: 20px;
+
+  font-size: 20px;
+}
+
+.analyticsValues {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.analyticsValue {
+  margin: 0;
+  color: #0f172a;
+  font-size: 24px;
+  line-height: 2rem;
+  font-weight: 600;
+}
+
+.analyticsChange {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1rem;
+  font-weight: 500;
+}
+
+.changePositive {
+  color: #16a34a;
+}
+
+.changeNegative {
+  color: #dc2626;
+}
+
+/* =========================
+   Generic Section Card
+========================= */
+
+.sectionCard {
+  background-color: #ffffff;
+  border: 1px solid #dce9f7;
+  border-radius: 16px;
+  padding: 24px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sectionTitle {
+  margin: 0;
+  color: #0f172a;
+  font-family: "DM Sans", sans-serif;
+  font-size: 18px;
+  line-height: 1.75rem;
+  font-weight: 600;
+}
+
+.sectionDescription {
+  margin: 4px 0 0;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.25rem;
+}
+
+/* =========================
+   Recent Payments Table
+========================= */
+
+.tableWrapper {
+  overflow: hidden;
+}
+
+.paymentsTable {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 14px;
+}
+
+.paymentsTable thead tr {
+  background-color: #e0e7ff;
+  border-bottom: 1px solid #dce9f7;
+  color: #64748b;
+
+  font-size: 12px;
+  line-height: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+}
+
+.paymentsTable th {
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 500;
+}
+
+.paymentsTable tbody tr {
+  border-bottom: 1px solid #dce9f7;
+  transition:
+    background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.paymentsTable tbody tr:hover {
+  background-color: color-mix(in oklab, #e0e7ff 50%, transparent);
+}
+
+.paymentsTable tbody tr:last-child {
+  border-bottom: 0;
+}
+
+.paymentsTable td {
+  padding: 12px 16px;
+}
+
+.tenantName {
+  color: #0f172a;
+  font-weight: 500;
+}
+
+.amountCell {
+  color: #0f172a;
+  font-weight: 500;
+}
+
+.mutedCell {
+  color: #64748b;
+}
+
+/* =========================
+   Payment Status
+========================= */
+
+.statusBadge {
+  width: fit-content;
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 6px 12px;
+
+  border-radius: 10px;
+
+  font-size: 12px;
+  line-height: 1rem;
+  font-weight: 500;
+}
+
+.statusIcon {
+  width: 14px;
+  height: 14px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+}
+
+.statusIcon svg {
+  width: 14px;
+  height: 14px;
+  stroke-width: 3;
+}
+
+.statusPaid {
+  background-color: #f0fdf4;
+  color: #15803d;
+}
+
+.statusPending {
+  background-color: #fffbeb;
+  color: #b45309;
+}
+
+.statusOverdue {
+  background-color: #fef2f2;
+  color: #b91c1c;
+}
+
+.capitalize {
+  text-transform: capitalize;
+}
+
+/* =========================
+   Upcoming Deadlines
+========================= */
+
+.deadlinesList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.deadlineItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 16px;
+
+  border: 1px solid #dce9f7;
+  border-radius: 16px;
+
+  background-color: color-mix(in oklab, #e0e7ff 30%, transparent);
+
+  transition:
+    background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.deadlineItem:hover {
+  background-color: color-mix(in oklab, #e0e7ff 50%, transparent);
+}
+
+.deadlineInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.deadlineTenant {
+  margin: 0;
+  color: #0f172a;
+  font-size: 14px;
+  line-height: 1.25rem;
+  font-weight: 500;
+}
+
+.deadlineMeta {
+  margin: 2px 0 0;
+
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1rem;
+}
+
+.deadlineRight {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.deadlineAmount {
+  text-align: right;
+}
+
+.deadlineAmount p {
+  margin: 0;
+  color: #0f172a;
+  font-size: 14px;
+  line-height: 1.25rem;
+  font-weight: 600;
+}
+
+.deadlineAmount span {
+  display: block;
+
+  margin-top: 0;
+
+  font-size: 12px;
+  line-height: 1rem;
+  font-weight: 500;
+}
+
+.deadlineWarning {
+  color: #d97706;
+}
+
+.deadlineSafe {
+  color: #16a34a;
+}
+
+.chevronIcon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: #64748b;
+}
+
+/* =========================
+   Responsive
+========================= */
+
+@media (max-width: 1100px) {
+  .analyticsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .dashboardContent {
+    padding: 24px;
+  }
+
+  .analyticsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .sectionCard {
+    overflow-x: auto;
+  }
+
+  .paymentsTable {
+    min-width: 700px;
+  }
+
+  .deadlineItem {
+    gap: 16px;
+  }
+}

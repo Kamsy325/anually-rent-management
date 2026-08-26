@@ -1,0 +1,687 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap");
+
+:global(*) {
+  box-sizing: border-box;
+}
+
+:global(html),
+:global(body),
+:global(#root) {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+:global(body) {
+  font-family: Inter, sans-serif;
+  color: #0f1c2e;
+  background: #ffffff;
+}
+
+:global(button),
+:global(input),
+:global(select),
+:global(textarea) {
+  font: inherit;
+}
+
+
+/* =========================================================
+   ROOT
+   ========================================================= */
+
+.exportWrapper {
+  width: 1440px;
+  min-height: 812px;
+  position: relative;
+  font-family: Inter, sans-serif;
+  background-color: #ffffff;
+}
+
+.authScreen {
+  display: flex;
+  flex-direction: row-reverse;
+  min-height: 812px;
+  width: 100%;
+  background: #ffffff;
+}
+
+
+/* =========================================================
+   LEFT FORM PANEL
+   ========================================================= */
+
+.formPanel {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  width: 620px;
+  min-height: 812px;
+
+  padding: 56px 80px;
+
+  background: #ffffff;
+}
+
+
+/* =========================================================
+   LOGO
+   ========================================================= */
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logoIcon {
+  width: 36px;
+  height: 36px;
+
+  background: #277eff;
+
+  border-radius: 8px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  color: #ffffff;
+}
+
+.logoText {
+  font-family: Inter, sans-serif;
+  font-size: 20px;
+  line-height: 1.75;
+
+  font-weight: 600;
+
+  color: #0f1c2e;
+
+  letter-spacing: -0.025em;
+}
+
+
+/* =========================================================
+   FORM CONTAINER
+   ========================================================= */
+
+.formContainer {
+  display: flex;
+  flex-direction: column;
+
+  gap: 28px;
+
+  width: 100%;
+  max-width: 420px;
+
+  margin-left: auto;
+  margin-right: auto;
+}
+
+
+/* =========================================================
+   FORM HEADING
+   ========================================================= */
+
+.formTitle {
+  margin: 0 0 4px 0;
+
+  font-family: Inter, sans-serif;
+
+  font-size: 30px;
+  line-height: 1.2;
+
+  font-weight: 600;
+
+  color: #0f1c2e;
+}
+
+.formSubtitle {
+  margin: 0;
+
+  font-size: 14px;
+  line-height: 1.428571;
+
+  color: #64748b;
+}
+
+
+/* =========================================================
+   GOOGLE BUTTON
+   ========================================================= */
+
+.googleButton {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 12px;
+
+  border: 1px solid #e2e8f0;
+
+  border-radius: 8px;
+
+  padding: 12px 16px;
+
+  background: #ffffff;
+
+  color: #0f1c2e;
+
+  font-size: 14px;
+
+  font-weight: 500;
+
+  cursor: pointer;
+}
+
+
+/* =========================================================
+   DIVIDER
+   ========================================================= */
+
+.divider {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  width: 100%;
+
+  color: #64748b;
+
+  font-size: 12px;
+}
+
+.dividerLine {
+  flex: 1;
+
+  height: 1px;
+
+  background: #e2e8f0;
+}
+
+
+/* =========================================================
+   FIELDS
+   ========================================================= */
+
+.fields {
+  display: flex;
+  flex-direction: column;
+
+  gap: 16px;
+}
+
+.nameRow {
+  display: flex;
+
+  gap: 12px;
+}
+
+.field {
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 6px;
+}
+
+.field label {
+  font-size: 12px;
+  line-height: 1;
+
+  font-weight: 500;
+
+  color: #0f1c2e;
+}
+
+.input {
+  min-height: 42px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 10px 12px;
+
+  background: #f1f5f9;
+
+  border: 1px solid #e2e8f0;
+
+  border-radius: 8px;
+
+  font-size: 14px;
+
+  color: #64748b;
+}
+
+.passwordInput {
+  justify-content: space-between;
+}
+
+.eyeButton {
+  width: 16px;
+  height: 16px;
+
+  padding: 0;
+
+  border: 0;
+
+  background: transparent;
+
+  color: #64748b;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+}
+
+
+/* =========================================================
+   PRIMARY BUTTON
+   ========================================================= */
+
+.primaryButton {
+  width: 100%;
+
+  border: 0;
+
+  border-radius: 8px;
+
+  padding: 12px 16px;
+
+  background: #277eff;
+
+  color: #ffffff;
+
+  font-size: 14px;
+
+  font-weight: 500;
+
+  cursor: pointer;
+}
+
+
+/* =========================================================
+   SIGN IN
+   ========================================================= */
+
+.signInText {
+  margin: 0;
+
+  text-align: center;
+
+  font-size: 14px;
+
+  line-height: 1.428571;
+
+  color: #64748b;
+}
+
+.primaryLink {
+  color: #277eff;
+
+  font-weight: 500;
+
+  text-decoration: none;
+}
+
+
+/* =========================================================
+   TERMS
+   ========================================================= */
+
+.terms {
+  margin: 0;
+
+  text-align: center;
+
+  font-size: 12px;
+
+  line-height: 1.5;
+
+  color: #64748b;
+}
+
+.termsLink {
+  color: #64748b;
+
+  text-decoration: underline;
+}
+
+
+/* =========================================================
+   RIGHT INFORMATION PANEL
+   ========================================================= */
+
+.infoPanel {
+  flex: 1;
+
+  position: relative;
+
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  padding: 56px 64px;
+
+  background: #1a2744;
+}
+
+
+/* =========================================================
+   DECORATIVE CIRCLES
+   ========================================================= */
+
+.topCircle {
+  position: absolute;
+
+  top: -80px;
+  right: -80px;
+
+  width: 340px;
+  height: 340px;
+
+  border-radius: 50%;
+
+  background: #2a3d6b;
+
+  opacity: 0.5;
+}
+
+.bottomCircle {
+  position: absolute;
+
+  bottom: -100px;
+  left: -60px;
+
+  width: 300px;
+  height: 300px;
+
+  border-radius: 50%;
+
+  background: #2a3d6b;
+
+  opacity: 0.3;
+}
+
+
+/* =========================================================
+   INFO TOP
+   ========================================================= */
+
+.infoTop {
+  position: relative;
+
+  z-index: 10;
+}
+
+.trustedBadge {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  background: rgba(39, 126, 255, 0.2);
+
+  padding: 6px 16px;
+
+  border-radius: 12px;
+
+  margin-bottom: 40px;
+
+  color: #277eff;
+
+  font-size: 12px;
+
+  font-weight: 500;
+}
+
+.infoTitle {
+  margin: 0 0 20px 0;
+
+  max-width: 620px;
+
+  font-family: Inter, sans-serif;
+
+  font-size: 36px;
+
+  line-height: 1.25;
+
+  font-weight: 600;
+
+  color: #ffffff;
+}
+
+.infoDescription {
+  margin: 0;
+
+  max-width: 384px;
+
+  font-size: 16px;
+
+  line-height: 1.625;
+
+  color: #bfdbfe;
+}
+
+
+/* =========================================================
+   FEATURES
+   ========================================================= */
+
+.features {
+  position: relative;
+
+  z-index: 10;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 20px;
+}
+
+.feature {
+  display: flex;
+
+  align-items: flex-start;
+
+  gap: 16px;
+}
+
+.featureIcon {
+  width: 40px;
+  height: 40px;
+
+  border-radius: 8px;
+
+  background: #2a3d6b;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  color: #277eff;
+}
+
+.featureTitle {
+  margin: 0;
+
+  font-size: 14px;
+
+  line-height: 1.5;
+
+  font-weight: 500;
+
+  color: #ffffff;
+}
+
+.featureDescription {
+  margin: 2px 0 0 0;
+
+  font-size: 12px;
+
+  line-height: 1.5;
+
+  color: #93c5fd;
+}
+
+
+/* =========================================================
+   TESTIMONIAL
+   ========================================================= */
+
+.testimonial {
+  position: relative;
+
+  z-index: 10;
+
+  background: #2a3d6b;
+
+  border-radius: 12px;
+
+  padding: 20px 24px;
+
+  margin-top: 40px;
+}
+
+.quote {
+  margin: 0;
+
+  font-size: 14px;
+
+  line-height: 1.625;
+
+  font-style: italic;
+
+  color: #dbeafe;
+}
+
+.person {
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  margin-top: 16px;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+
+  border-radius: 50%;
+
+  background: #277eff;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  color: #ffffff;
+
+  font-size: 12px;
+
+  font-weight: 600;
+}
+
+.personName {
+  margin: 0;
+
+  font-size: 12px;
+
+  line-height: 1.5;
+
+  font-weight: 500;
+
+  color: #ffffff;
+}
+
+.personRole {
+  margin: 0;
+
+  font-size: 12px;
+
+  line-height: 1.5;
+
+  color: #93c5fd;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1100px) {
+  .exportWrapper {
+    width: 100%;
+  }
+
+  .formPanel {
+    width: 50%;
+    padding: 48px;
+  }
+
+  .infoPanel {
+    padding: 48px;
+  }
+}
+
+@media (max-width: 800px) {
+  .authScreen {
+    flex-direction: column;
+  }
+
+  .formPanel {
+    width: 100%;
+    min-height: auto;
+
+    padding: 40px 24px;
+
+    gap: 40px;
+  }
+
+  .infoPanel {
+    min-height: 650px;
+
+    padding: 48px 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .formPanel {
+    padding: 32px 20px;
+  }
+
+  .infoPanel {
+    padding: 40px 20px;
+  }
+
+  .nameRow {
+    flex-direction: column;
+  }
+
+  .infoTitle {
+    font-size: 30px;
+  }
+}

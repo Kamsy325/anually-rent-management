@@ -1,0 +1,76 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@100;200;300;400;500;600;700;800;900&display=swap");
+
+/* =========================================
+   ROOT / DESIGN TOKENS
+========================================= */
+
+:root {
+  --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+
+  --spacing: 0.25rem;
+
+  --text-sm: 14px;
+  --text-sm-line-height: calc(1.25 / 0.875);
+
+  --text-xl: 20px;
+  --text-xl-line-height: calc(1.75 / 1.25);
+
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+
+  --tracking-tight: -0.025em;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-xl: 28px;
+
+  --transition-duration: 150ms;
+  --transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
+
+  --color-background: #f5f9fe;
+  --color-foreground: #0f172a;
+  --color-border: #dce9f7;
+
+  --color-primary: #3b82f6;
+  --color-primary-foreground: #ffffff;
+
+  --color-secondary: #dbeafe;
+  --color-muted: #e0e7ff;
+  --color-muted-foreground: #64748b;
+
+  --color-surface: #ffffff;
+
+  --font-body: "DM Sans", sans-serif;
+  --font-headings: "DM Sans", sans-serif;
+}
+
+
+/* =========================================
+   RESET
+========================================= */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border: 0 solid;
+}
+
+html {
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+  tab-size: 4;
+  font-family: var(--font-sans);
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  margin: 0;
+}
+
