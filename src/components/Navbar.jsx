@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import axios from "axios";
 import {
   FiPlus,
   FiBell,
@@ -7,15 +8,42 @@ import {
   FiShield,
   FiLogOut,
   FiX,
+  FiCheck,
 } from "react-icons/fi";
 import styles from "../css/Layout.module.css";
+
+const API_URL = "http://localhost:5000";
 
 const Navbar = ({ setIsAddTenantModal, user }) => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   const notificationRef = useRef(null);
   const profileRef = useRef(null);
+
+  const fetchNotifications = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      const res = await axios.get(`${API_URL}/notifications`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setNotifications(res.data.notifications || []);
+      setUnreadCount(res.data.unreadCount || 0);
+    } catch (err) {
+      console.error("Failed to load notifications", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, 60000); // Poll every minute
+    return () => clearInterval(interval);
+  }, []);
 
   // Close menus when clicking outside
   useEffect(() => {
@@ -36,7 +64,6 @@ const Navbar = ({ setIsAddTenantModal, user }) => {
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -47,35 +74,33 @@ const Navbar = ({ setIsAddTenantModal, user }) => {
     setShowProfileMenu(false);
   };
 
-  const handleProfileClick = () => {
-    setShowProfileMenu((prev) => !prev);
-    setShowNotifications(false);
+  const markAllRead = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.patch(
+        `${API_URL}/notifications/read-all`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setUnreadCount(0);
+      setNotifications((prev) => prev.map((n) => ({ ...n, is_read: 1 })));
+    } catch (err) {
+      console.error("Error marking read", err);
+    }
   };
 
-  const handleEditProfile = () => {
-    setShowProfileMenu(false);
-
-    // Put your edit-profile modal state here later
-    console.log("Edit profile clicked");
-  };
-
-  const handleTerms = () => {
-    setShowProfileMenu(false);
-
-    console.log("Terms of Use clicked");
-  };
-
-  const handlePrivacy = () => {
-    setShowProfileMenu(false);
-
-    console.log("Privacy Policy clicked");
-  };
-
-  const handleLogout = () => {
-    setShowProfileMenu(false);
-
-    // Put your logout modal state here later
-    console.log("Logout clicked");
+  const getNotificationStyle = (type) => {
+    switch (type) {
+      case "due_soon":
+      case "pending":
+        return styles.notificationIconOrange;
+      case "overdue":
+        return styles.notificationIconRed;
+      case "paid":
+        return styles.notificationIconBlue;
+      default:
+        return styles.notificationIconBlue;
+    }
   };
 
   return (
@@ -83,39 +108,28 @@ const Navbar = ({ setIsAddTenantModal, user }) => {
       {/* BRAND */}
       <div className={styles.navbarBrand}>
         <div className={styles.navbarLogo}>
-          <span
-            className={`${styles.logoBar} ${styles.logoBar1}`}
-          />
-          <span
-            className={`${styles.logoBar} ${styles.logoBar2}`}
-          />
-          <span
-            className={`${styles.logoBar} ${styles.logoBar3}`}
-          />
+          <span className={`${styles.logoBar} ${styles.logoBar1}`} />
+          <span className={`${styles.logoBar} ${styles.logoBar2}`} />
+          <span className={`${styles.logoBar} ${styles.logoBar3}`} />
         </div>
-
-        <span className={styles.navbarTitle}>
-          Annually
-        </span>
+        <span className={styles.navbarTitle}>Annually</span>
       </div>
 
       {/* ACTIONS */}
       <div className={styles.navbarActions}>
-        {/* ADD TENANT */}
-        <button
-          type="button"
-          className={styles.addTenantBtn}
-          onClick={() => setIsAddTenantModal(true)}
-        >
-          <FiPlus size={14} />
-          <span>Add Tenant</span>
-        </button>
+        {user?.role === "landlord" && (
+          <button
+            type="button"
+            className={styles.addTenantBtn}
+            onClick={() => setIsAddTenantModal(true)}
+          >
+            <FiPlus size={14} />
+            <span>Add Tenant</span>
+          </button>
+        )}
 
         {/* NOTIFICATIONS */}
-        <div
-          className={styles.navbarPopupWrapper}
-          ref={notificationRef}
-        >
+        <div className={styles.navbarPopupWrapper} ref={notificationRef}>
           <button
             type="button"
             className={styles.notificationBtn}
@@ -123,8 +137,7 @@ const Navbar = ({ setIsAddTenantModal, user }) => {
             onClick={handleNotificationClick}
           >
             <FiBell size={18} />
-
-            <span className={styles.notificationDot} />
+            {unreadCount > 0 && <span className={styles.notificationDot} />}
           </button>
 
           {showNotifications && (
@@ -132,7 +145,7 @@ const Navbar = ({ setIsAddTenantModal, user }) => {
               <div className={styles.notificationHeader}>
                 <div>
                   <h3>Notifications</h3>
-                  <p>You have 3 new notifications</p>
+                  <p>You have {unreadCount} unread notification(s)</p>
                 </div>
 
                 <button
@@ -145,137 +158,71 @@ const Navbar = ({ setIsAddTenantModal, user }) => {
               </div>
 
               <div className={styles.notificationList}>
-                <div className={styles.notificationItem}>
-                  <div
-                    className={`${styles.notificationIcon} ${styles.notificationIconBlue}`}
-                  >
-                    <FiBell size={16} />
-                  </div>
+                {notifications.length === 0 ? (
+                  <p style={{ padding: "16px", color: "#666" }}>No notifications yet.</p>
+                ) : (
+                  notifications.map((n) => (
+                    <div key={n.id} className={styles.notificationItem}>
+                      <div className={`${styles.notificationIcon} ${getNotificationStyle(n.type)}`}>
+                        <FiBell size={16} />
+                      </div>
 
-                  <div className={styles.notificationContent}>
-                    <p>New payment received</p>
-                    <span>
-                      John Smith paid $1,200 in rent.
-                    </span>
-                    <small>5 minutes ago</small>
-                  </div>
-                </div>
-
-                <div className={styles.notificationItem}>
-                  <div
-                    className={`${styles.notificationIcon} ${styles.notificationIconOrange}`}
-                  >
-                    <FiBell size={16} />
-                  </div>
-
-                  <div className={styles.notificationContent}>
-                    <p>Payment due soon</p>
-                    <span>
-                      Sarah Johnson's payment is due in 2 days.
-                    </span>
-                    <small>1 hour ago</small>
-                  </div>
-                </div>
-
-                <div className={styles.notificationItem}>
-                  <div
-                    className={`${styles.notificationIcon} ${styles.notificationIconRed}`}
-                  >
-                    <FiBell size={16} />
-                  </div>
-
-                  <div className={styles.notificationContent}>
-                    <p>Overdue payment</p>
-                    <span>
-                      Michael Brown's rent payment is overdue.
-                    </span>
-                    <small>3 hours ago</small>
-                  </div>
-                </div>
+                      <div className={styles.notificationContent}>
+                        <p>{n.title}</p>
+                        <span>{n.message}</span>
+                        <small>{new Date(n.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</small>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
 
-              <button
-                type="button"
-                className={styles.viewNotificationsButton}
-              >
-                View all notifications
-              </button>
+              {unreadCount > 0 && (
+                <button
+                  type="button"
+                  className={styles.viewNotificationsButton}
+                  onClick={markAllRead}
+                >
+                  Mark all as read
+                </button>
+              )}
             </div>
           )}
         </div>
 
         {/* PROFILE */}
-        <div
-          className={styles.navbarPopupWrapper}
-          ref={profileRef}
-        >
+        <div className={styles.navbarPopupWrapper} ref={profileRef}>
           <button
             type="button"
             className={styles.profileAvatar}
             aria-label="Profile menu"
-            onClick={handleProfileClick}
+            onClick={() => {
+              setShowProfileMenu((prev) => !prev);
+              setShowNotifications(false);
+            }}
           >
-            M
+            {user?.name?.[0]?.toUpperCase() || "M"}
           </button>
 
           {showProfileMenu && (
             <div className={styles.profileMenu}>
-              {/* PROFILE HEADER */}
               <div className={styles.profileMenuHeader}>
                 <div className={styles.profileMenuAvatar}>
-                  M
+                  {user?.name?.[0]?.toUpperCase() || "M"}
                 </div>
-
                 <div>
-                  <p className={styles.profileMenuName}>
-                    Alex Morgan
-                  </p>
-
-                  <span className={styles.profileMenuEmail}>
-                    alex.morgan@email.com
-                  </span>
+                  <p className={styles.profileMenuName}>{user?.name || "User"}</p>
+                  <span className={styles.profileMenuEmail}>{user?.email}</span>
                 </div>
               </div>
-
               <div className={styles.profileMenuDivider} />
-
-              {/* EDIT PROFILE */}
-              <button
-                type="button"
-                className={styles.profileMenuItem}
-                onClick={handleEditProfile}
-              >
-                <FiEdit2 size={17} />
-                <span>Edit profile</span>
-              </button>
-
-              {/* TERMS */}
-              <button
-                type="button"
-                className={styles.profileMenuItem}
-                onClick={handleTerms}
-              >
-                <FiFileText size={17} />
-                <span>Terms of Use</span>
-              </button>
-
-              {/* PRIVACY */}
-              <button
-                type="button"
-                className={styles.profileMenuItem}
-                onClick={handlePrivacy}
-              >
-                <FiShield size={17} />
-                <span>Privacy Policy</span>
-              </button>
-
-              <div className={styles.profileMenuDivider} />
-
-              {/* LOGOUT */}
               <button
                 type="button"
                 className={`${styles.profileMenuItem} ${styles.logoutMenuItem}`}
-                onClick={handleLogout}
+                onClick={() => {
+                  localStorage.clear();
+                  window.location.href = "/";
+                }}
               >
                 <FiLogOut size={17} />
                 <span>Logout</span>
