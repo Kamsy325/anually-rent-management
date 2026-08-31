@@ -1,3 +1,5 @@
+// Tenants.jsx
+
 import React, {
   useMemo,
   useState,
@@ -23,12 +25,17 @@ import styles from "../css/Tenant.module.css";
 // STATUS CLASSES
 // ==================================================
 
+// Tenants.jsx
+
+
+
 const statusClass = {
+  Active: styles.statusActive || styles.statusPaid,
   Paid: styles.statusPaid,
   Pending: styles.statusPending,
   Overdue: styles.statusOverdue,
+  Locked: styles.statusLocked || styles.statusOverdue,
 };
-
 
 // ==================================================
 // FORMAT LEASE END DATE
@@ -186,8 +193,8 @@ function TenantCard({
   // STATUS
   // ==================================================
 
-  const status =
-    tenant?.status || "Pending";
+  // Inside TenantCard component:
+const status = tenant?.status || "Active";
 
 
   // ==================================================
@@ -631,30 +638,15 @@ export default function Tenants() {
   // ==================================================
 
   const handleFilter = () => {
-
-    setFilter(
-      (current) => {
-
-        if (current === "All") {
-          return "Paid";
-        }
-
-        if (current === "Paid") {
-          return "Pending";
-        }
-
-        if (current === "Pending") {
-          return "Overdue";
-        }
-
-        return "All";
-
-      }
-    );
-
-  };
-
-
+  setFilter((current) => {
+    if (current === "All") return "Active";
+    if (current === "Active") return "Paid";
+    if (current === "Paid") return "Pending";
+    if (current === "Pending") return "Overdue";
+    if (current === "Overdue") return "Locked";
+    return "All";
+  });
+};
   // ==================================================
   // PAGE
   // ==================================================

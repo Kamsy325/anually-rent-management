@@ -1,20 +1,13 @@
-import React, {
-  useEffect,
-  useState,
-} from "react";
-
+// components/Layout.jsx
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-
-import {
-  Outlet,
-  useNavigate,
-} from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
-
 import styles from "../css/Layout.module.css";
 
+// Existing Modals
 import AddTenantModal from "../Modals/AddTenantModal";
 import EditTenantModal from "../Modals/EditTenantModal";
 import DeleteTenantModal from "../Modals/DeleteTenantModal";
@@ -22,1340 +15,347 @@ import EditProfileModal from "../Modals/EditProfileModal";
 import LogoutModal from "../Modals/LogoutModal";
 import PayoutConnectModal from "../Modals/PaystackConnectModal";
 
+// Subscription Modals
+import ChoosePlanModal from "../Modals/ChoosePlanModal";
+import UpgradePlanModal from "../Modals/UpgradePlanModal";
+import RenewPlanModal from "../Modals/RenewPlanModal";
 
-const API_URL =
-  "http://localhost:5000";
+// Legal Modals
+import PrivacyPolicyModal from "../Modals/PrivacyPolicyModal";
+import TermsOfUseModal from "../Modals/TermsOfUseModal";
 
+const API_URL = "http://localhost:5000";
 
 function Layout() {
-
   const navigate = useNavigate();
 
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // =====================================================
-  // USER
-  // =====================================================
+  const [tenants, setTenants] = useState([]);
+  const [tenantsLoading, setTenantsLoading] = useState(false);
 
-  const [
-    user,
-    setUser,
-  ] = useState(null);
+  const [selectedTenant, setSelectedTenant] = useState(null);
+  const [tenantToDelete, setTenantToDelete] = useState(null);
 
+  // Standard Modals
+  const [isAddTenantModal, setIsAddTenantModal] = useState(false);
+  const [isEditTenantModal, setIsEditTenantModal] = useState(false);
+  const [isDeleteTenantModal, setIsDeleteTenantModal] = useState(false);
+  const [isEditProfileModal, setIsEditProfileModal] = useState(false);
+  const [isLogoutModal, setIsLogoutModal] = useState(false);
+  const [isPayoutConnectModal, setIsPayoutConnectModal] = useState(false);
 
-  const [
-    loading,
-    setLoading,
-  ] = useState(true);
+  // Subscription Modals & Data State
+  const [isChoosePlanModal, setIsChoosePlanModal] = useState(false);
+  const [isUpgradePlanModal, setIsUpgradePlanModal] = useState(false);
+  const [isRenewPlanModal, setIsRenewPlanModal] = useState(false);
 
+  // Legal Modals State
+  const [isPrivacyPolicyModal, setIsPrivacyPolicyModal] = useState(false);
+  const [isTermsOfUseModal, setIsTermsOfUseModal] = useState(false);
 
-  // =====================================================
-  // TENANTS
-  // =====================================================
+  const [subscription, setSubscription] = useState({
+    plan_type: "free",
+    status: "active",
+    current_period_end: null,
+    isFirstLogin: false,
+  });
 
-  const [
-    tenants,
-    setTenants,
-  ] = useState([]);
-
-
-  const [
-    tenantsLoading,
-    setTenantsLoading,
-  ] = useState(false);
-
-
-  const [
-    selectedTenant,
-    setSelectedTenant,
-  ] = useState(null);
-
-
-  const [
-    tenantToDelete,
-    setTenantToDelete,
-  ] = useState(null);
-
-
-  // =====================================================
-  // MODALS
-  // =====================================================
-
-  const [
-    isAddTenantModal,
-    setIsAddTenantModal,
-  ] = useState(false);
-
-
-  const [
-    isEditTenantModal,
-    setIsEditTenantModal,
-  ] = useState(false);
-
-
-  const [
-    isDeleteTenantModal,
-    setIsDeleteTenantModal,
-  ] = useState(false);
-
-
-  const [
-    isEditProfileModal,
-    setIsEditProfileModal,
-  ] = useState(false);
-
-
-  const [
-    isLogoutModal,
-    setIsLogoutModal,
-  ] = useState(false);
-
-
-  // =====================================================
-  // PAYOUT CONNECT MODAL
-  // =====================================================
-
-  const [
-    isPayoutConnectModal,
-    setIsPayoutConnectModal,
-  ] = useState(false);
-
-
-  // =====================================================
-  // GET USER FROM LOCAL STORAGE
-  //
-  // IMPORTANT:
-  //
-  // We DO NOT call:
-  //
-  // GET /get-user
-  //
-  // anymore.
-  //
-  // The login already saves:
-  //
-  // localStorage.user
-  //
-  // containing:
-  //
-  // {
-  //   ...user,
-  //   role: "tenant"
-  // }
-  //
-  // or:
-  //
-  // {
-  //   ...user,
-  //   role: "landlord"
-  // }
-  // =====================================================
-
+  // Load User Authentication
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    const storedUser = localStorage.getItem("user");
 
-    const token =
-      localStorage.getItem(
-        "token"
-      );
-
-
-    const storedUser =
-      localStorage.getItem(
-        "user"
-      );
-
-
-    console.log(
-      "LAYOUT TOKEN:",
-      token
-    );
-
-
-    console.log(
-      "LAYOUT STORED USER:",
-      storedUser
-    );
-
-
-    // ===================================================
-    // NO TOKEN
-    // ===================================================
-
-    if (!token) {
-
-      console.error(
-        "No authentication token found."
-      );
-
-
-      navigate("/", {
-        replace: true,
-      });
-
-
+    if (!token || !storedUser) {
+      localStorage.clear();
+      navigate("/", { replace: true });
       return;
-
     }
-
-
-    // ===================================================
-    // NO USER
-    // ===================================================
-
-    if (!storedUser) {
-
-      console.error(
-        "No user found in localStorage."
-      );
-
-
-      localStorage.removeItem(
-        "token"
-      );
-
-
-      navigate("/", {
-        replace: true,
-      });
-
-
-      return;
-
-    }
-
 
     try {
+      const parsedUser = JSON.parse(storedUser);
+      const role = String(parsedUser?.role || "").trim().toLowerCase();
 
-      // =================================================
-      // PARSE USER
-      // =================================================
-
-      const parsedUser =
-        JSON.parse(
-          storedUser
-        );
-
-
-      console.log(
-        "LAYOUT PARSED USER:",
-        parsedUser
-      );
-
-
-      // =================================================
-      // NORMALIZE ROLE
-      // =================================================
-
-      const role =
-        String(
-          parsedUser?.role || ""
-        )
-          .trim()
-          .toLowerCase();
-
-
-      console.log(
-        "LAYOUT USER ROLE:",
-        role
-      );
-
-
-      // =================================================
-      // VALIDATE ROLE
-      // =================================================
-
-      if (
-        role !== "landlord" &&
-        role !== "tenant"
-      ) {
-
-        console.error(
-          "INVALID USER ROLE:",
-          parsedUser?.role
-        );
-
-
-        localStorage.removeItem(
-          "token"
-        );
-
-        localStorage.removeItem(
-          "user"
-        );
-
-
-        navigate("/", {
-          replace: true,
-        });
-
-
+      if (role !== "landlord" && role !== "tenant") {
+        localStorage.clear();
+        navigate("/", { replace: true });
         return;
-
       }
 
-
-      // =================================================
-      // CREATE CLEAN USER
-      // =================================================
-
-      const authenticatedUser = {
-
-        ...parsedUser,
-
-        role: role,
-
-      };
-
-
-      // =================================================
-      // SET USER
-      // =================================================
-
-      setUser(
-        authenticatedUser
-      );
-
-
-      console.log(
-        "LAYOUT AUTHENTICATED USER:",
-        authenticatedUser
-      );
-
-
+      setUser({ ...parsedUser, role });
     } catch (error) {
-
-      console.error(
-        "INVALID USER DATA:",
-        error
-      );
-
-
-      // =================================================
-      // INVALID LOCAL STORAGE DATA
-      // =================================================
-
-      localStorage.removeItem(
-        "token"
-      );
-
-      localStorage.removeItem(
-        "user"
-      );
-
-
-      navigate("/", {
-        replace: true,
-      });
-
-
-      return;
-
+      localStorage.clear();
+      navigate("/", { replace: true });
     } finally {
-
       setLoading(false);
-
     }
-
   }, [navigate]);
 
-
-  // =====================================================
-  // GET TENANTS
-  //
-  // ONLY LANDLORDS SHOULD CALL THIS.
-  //
-  // Tenants should NOT call:
-  //
-  // GET /tenants
-  //
-  // when they open /app.
-  // =====================================================
-
-  const getTenants = async () => {
-
-    // ===================================================
-    // MAKE SURE USER IS LANDLORD
-    // ===================================================
-
-    if (
-      !user ||
-      user.role !== "landlord"
-    ) {
-
-      console.log(
-        "Skipping getTenants because user is not a landlord."
-      );
-
-
-      return;
-
+  // AUTO-OPEN EDIT PROFILE MODAL ON SIGNUP
+  useEffect(() => {
+    if (!loading && user) {
+      const isNewUser = localStorage.getItem("isNewUser");
+      if (isNewUser === "true") {
+        setIsEditProfileModal(true);
+        localStorage.removeItem("isNewUser");
+      }
     }
+  }, [loading, user]);
 
-
-    // ===================================================
-    // GET TOKEN
-    // ===================================================
-
-    const token =
-      localStorage.getItem(
-        "token"
-      );
-
-
-    if (!token) {
-
-      navigate("/", {
-        replace: true,
-      });
-
-
-      return;
-
-    }
-
+  // Fetch Landlord Subscription Status & Determine Triggers
+  const fetchSubscriptionStatus = async () => {
+    if (!user || user.role !== "landlord") return;
 
     try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get(`${API_URL}/subscription/status`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-      setTenantsLoading(
-        true
-      );
+      const sub = res.data;
+      setSubscription(sub);
 
+      const now = new Date();
+      const periodEnd = sub.current_period_end ? new Date(sub.current_period_end) : null;
 
-      console.log(
-        "GETTING TENANTS..."
-      );
-
-
-      const response =
-        await axios.get(
-          `${API_URL}/tenants`,
-          {
-            headers: {
-              Authorization:
-                `Bearer ${token}`,
-            },
-          }
-        );
-
-
-      console.log(
-        "GET TENANTS RESPONSE:",
-        response.data
-      );
-
-
-      // =================================================
-      // SAVE TENANTS
-      // =================================================
-
-      setTenants(
-        response.data?.tenants || []
-      );
-
-
-    } catch (error) {
-
-      console.error(
-        "GET TENANTS ERROR:",
-        error
-      );
-
-
-      console.error(
-        "GET TENANTS RESPONSE:",
-        error.response?.data
-      );
-
-
-      // =================================================
-      // ONLY LOGOUT ON 401
-      //
-      // A 403 or other error should not automatically
-      // destroy the login session.
-      // =================================================
-
-      if (
-        error.response?.status === 401
-      ) {
-
-        localStorage.removeItem(
-          "token"
-        );
-
-        localStorage.removeItem(
-          "user"
-        );
-
-
-        navigate("/", {
-          replace: true,
-        });
-
+      if (sub.isFirstLogin || !sub.plan_type) {
+        setIsChoosePlanModal(true);
+      } else if (sub.plan_type !== "free" && periodEnd && periodEnd < now) {
+        setIsRenewPlanModal(true);
       }
-
-    } finally {
-
-      setTenantsLoading(
-        false
-      );
-
+    } catch (err) {
+      console.error("Failed to fetch subscription status:", err);
     }
-
   };
-
-
-  // =====================================================
-  // LOAD TENANTS AFTER USER LOADS
-  //
-  // IMPORTANT:
-  //
-  // Only landlords load tenants.
-  //
-  // Tenants go directly to their TenantDashboard
-  // without requesting /tenants.
-  // =====================================================
 
   useEffect(() => {
+    if (!loading && user?.role === "landlord") {
+      fetchSubscriptionStatus();
+    }
+  }, [loading, user]);
 
-    if (
-      !loading &&
-      user &&
-      user.role === "landlord"
-    ) {
+  const getTenants = async () => {
+    if (!user || user.role !== "landlord") return;
+    const token = localStorage.getItem("token");
+    if (!token) return navigate("/", { replace: true });
 
+    try {
+      setTenantsLoading(true);
+      const response = await axios.get(`${API_URL}/tenants`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setTenants(response.data?.tenants || []);
+    } catch (error) {
+      if (error.response?.status === 401) {
+        localStorage.clear();
+        navigate("/", { replace: true });
+      }
+    } finally {
+      setTenantsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!loading && user?.role === "landlord") {
       getTenants();
-
     }
+  }, [loading, user]);
 
-  }, [
-    loading,
-    user,
-  ]);
-
-
-  // =====================================================
-  // ADD TENANT
-  // =====================================================
-
-  const handleAddTenant = async (
-    formData
-  ) => {
-
-    // ===================================================
-    // ONLY LANDLORD
-    // ===================================================
-
-    if (
-      !user ||
-      user.role !== "landlord"
-    ) {
-
-      console.error(
-        "Only landlords can add tenants."
-      );
-
-
-      return;
-
-    }
-
-
-    const token =
-      localStorage.getItem(
-        "token"
-      );
-
-
-    if (!token) {
-
-      navigate("/", {
-        replace: true,
-      });
-
-
-      return;
-
-    }
-
+  // Handle Add Tenant
+  const handleAddTenant = async (formData) => {
+    if (!user || user.role !== "landlord") return;
+    const token = localStorage.getItem("token");
+    if (!token) return navigate("/", { replace: true });
 
     try {
-
-      const response =
-        await axios.post(
-          `${API_URL}/tenants`,
-          formData,
-          {
-            headers: {
-              Authorization:
-                `Bearer ${token}`,
-            },
-          }
-        );
-
-
-      console.log(
-        "ADD TENANT RESPONSE:",
-        response.data
-      );
-
-
-      // =================================================
-      // REFRESH TENANTS
-      // =================================================
-
-      await getTenants();
-
-
-      // =================================================
-      // CLOSE MODAL
-      // =================================================
-
-      setIsAddTenantModal(
-        false
-      );
-
-
-    } catch (error) {
-
-      console.error(
-        "ADD TENANT ERROR:",
-        error
-      );
-
-
-      console.error(
-        "ADD TENANT RESPONSE:",
-        error.response?.data
-      );
-
-
-      alert(
-        error.response?.data?.message ||
-        "Failed to add tenant."
-      );
-
-    }
-
-  };
-
-
-  // =====================================================
-  // OPEN EDIT TENANT
-  // =====================================================
-
-  const handleOpenEditTenant = (
-    tenant
-  ) => {
-
-    console.log(
-      "OPEN EDIT TENANT:",
-      tenant
-    );
-
-
-    setSelectedTenant(
-      tenant
-    );
-
-
-    setIsEditTenantModal(
-      true
-    );
-
-  };
-
-
-  // =====================================================
-  // CLOSE EDIT TENANT
-  // =====================================================
-
-  const handleCloseEditTenant = () => {
-
-    setIsEditTenantModal(
-      false
-    );
-
-
-    setSelectedTenant(
-      null
-    );
-
-  };
-
-
-  // =====================================================
-  // EDIT TENANT
-  // =====================================================
-
-  const handleEditTenant = async (
-    formData
-  ) => {
-
-    // ===================================================
-    // ONLY LANDLORD
-    // ===================================================
-
-    if (
-      !user ||
-      user.role !== "landlord"
-    ) {
-
-      console.error(
-        "Only landlords can edit tenants."
-      );
-
-
-      return;
-
-    }
-
-
-    const token =
-      localStorage.getItem(
-        "token"
-      );
-
-
-    if (!token) {
-
-      navigate("/", {
-        replace: true,
+      await axios.post(`${API_URL}/tenants`, formData, {
+        headers: { Authorization: `Bearer ${token}` },
       });
 
-
-      return;
-
+      await getTenants();
+      setIsAddTenantModal(false);
+      fetchSubscriptionStatus();
+    } catch (error) {
+      if (error.response?.data?.code === "TENANT_LIMIT_REACHED" || error.response?.status === 403) {
+        setIsAddTenantModal(false);
+        setIsUpgradePlanModal(true);
+      } else {
+        alert(error.response?.data?.message || "Failed to add tenant.");
+      }
     }
+  };
 
-
-    if (!selectedTenant) {
-
-      console.error(
-        "No tenant selected for editing."
-      );
-
-
-      return;
-
-    }
-
+  // Handle Edit Tenant
+  const handleEditTenant = async (updatedData) => {
+    if (!selectedTenant?.id) return;
+    const token = localStorage.getItem("token");
 
     try {
-
-      const response =
-        await axios.put(
-          `${API_URL}/tenants/${selectedTenant.id}`,
-          formData,
-          {
-            headers: {
-              Authorization:
-                `Bearer ${token}`,
-            },
-          }
-        );
-
-
-      console.log(
-        "EDIT TENANT RESPONSE:",
-        response.data
-      );
-
-
-      // =================================================
-      // REFRESH TENANTS
-      // =================================================
-
+      await axios.put(`${API_URL}/tenants/${selectedTenant.id}`, updatedData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       await getTenants();
-
-
-      // =================================================
-      // CLOSE MODAL
-      // =================================================
-
-      handleCloseEditTenant();
-
-
+      setIsEditTenantModal(false);
+      setSelectedTenant(null);
     } catch (error) {
-
-      console.error(
-        "EDIT TENANT ERROR:",
-        error
-      );
-
-
-      console.error(
-        "EDIT TENANT RESPONSE:",
-        error.response?.data
-      );
-
-
-      throw error;
-
+      alert(error.response?.data?.message || "Failed to update tenant.");
     }
-
   };
 
-
-  // =====================================================
-  // OPEN DELETE TENANT
-  // =====================================================
-
-  const handleOpenDeleteTenant = (
-    tenant
-  ) => {
-
-    console.log(
-      "OPEN DELETE TENANT:",
-      tenant
-    );
-
-
-    setTenantToDelete(
-      tenant
-    );
-
-
-    setIsDeleteTenantModal(
-      true
-    );
-
-  };
-
-
-  // =====================================================
-  // CLOSE DELETE TENANT
-  // =====================================================
-
-  const handleCloseDeleteTenant = () => {
-
-    setIsDeleteTenantModal(
-      false
-    );
-
-
-    setTenantToDelete(
-      null
-    );
-
-  };
-
-
-  // =====================================================
-  // DELETE TENANT
-  // =====================================================
-
+  // Handle Delete Tenant
   const handleDeleteTenant = async () => {
-
-    // ===================================================
-    // ONLY LANDLORD
-    // ===================================================
-
-    if (
-      !user ||
-      user.role !== "landlord"
-    ) {
-
-      console.error(
-        "Only landlords can delete tenants."
-      );
-
-
-      return;
-
-    }
-
-
-    const token =
-      localStorage.getItem(
-        "token"
-      );
-
-
-    if (!token) {
-
-      navigate("/", {
-        replace: true,
-      });
-
-
-      return;
-
-    }
-
-
-    if (!tenantToDelete) {
-
-      console.error(
-        "No tenant selected for deletion."
-      );
-
-
-      return;
-
-    }
-
+    if (!tenantToDelete?.id) return;
+    const token = localStorage.getItem("token");
 
     try {
-
-      console.log(
-        "DELETING TENANT:",
-        tenantToDelete.id
-      );
-
-
-      const response =
-        await axios.delete(
-          `${API_URL}/tenants/${tenantToDelete.id}`,
-          {
-            headers: {
-              Authorization:
-                `Bearer ${token}`,
-            },
-          }
-        );
-
-
-      console.log(
-        "DELETE TENANT RESPONSE:",
-        response.data
-      );
-
-
-      // =================================================
-      // REMOVE FROM FRONTEND
-      // =================================================
-
-      setTenants(
-        (previousTenants) =>
-          previousTenants.filter(
-            (tenant) =>
-              Number(
-                tenant.id
-              ) !==
-              Number(
-                tenantToDelete.id
-              )
-          )
-      );
-
-
-      // =================================================
-      // CLOSE MODAL
-      // =================================================
-
-      handleCloseDeleteTenant();
-
-
+      await axios.delete(`${API_URL}/tenants/${tenantToDelete.id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      await getTenants();
+      setIsDeleteTenantModal(false);
+      setTenantToDelete(null);
     } catch (error) {
-
-      console.error(
-        "DELETE TENANT ERROR:",
-        error
-      );
-
-
-      console.error(
-        "DELETE RESPONSE:",
-        error.response?.data
-      );
-
-
-      throw error;
-
+      alert(error.response?.data?.message || "Failed to delete tenant.");
     }
-
   };
 
-
-  // =====================================================
-  // OPEN PAYOUT CONNECT
-  // =====================================================
-
-  const handleOpenPayoutConnect = () => {
-
-    console.log(
-      "OPEN PAYOUT CONNECT MODAL"
-    );
-
-
-    setIsPayoutConnectModal(
-      true
-    );
-
-  };
-
-
-  // =====================================================
-  // CLOSE PAYOUT CONNECT
-  // =====================================================
-
-  const handleClosePayoutConnect = () => {
-
-    setIsPayoutConnectModal(
-      false
-    );
-
-  };
-
-
-  // =====================================================
-  // LOGOUT
-  // =====================================================
-
-  const handleOpenLogout = () => {
-
-    setIsLogoutModal(
-      true
-    );
-
-  };
-
-
-  // =====================================================
-  // LOADING
-  // =====================================================
-
-  if (loading) {
-
-    return (
-
-      <div
-        style={{
-          minHeight: "100vh",
-
-          display: "flex",
-
-          alignItems: "center",
-
-          justifyContent: "center",
-
-          fontSize: "16px",
-
-          color: "#374151",
-        }}
-      >
-        Loading...
-      </div>
-
-    );
-
-  }
-
-
-  // =====================================================
-  // SAFETY CHECK
-  // =====================================================
-
-  if (!user) {
-
-    return null;
-
-  }
-
-
-  // =====================================================
-  // LAYOUT
-  // =====================================================
+  if (loading) return <div>Loading...</div>;
+  if (!user) return null;
 
   return (
-
-    <div
-      className={
-        styles.layout
-      }
-    >
-
-      {/* =================================================
-          NAVBAR
-      ================================================= */}
-
+    <div className={styles.layout}>
       <Navbar
-
-        setIsAddTenantModal={
-          setIsAddTenantModal
-        }
-
-        user={
-          user
-        }
-
+        setIsAddTenantModal={setIsAddTenantModal}
+        onOpenUpgradeModal={() => setIsUpgradePlanModal(true)}
+        user={user}
+        tenants={tenants}
+        subscription={subscription}
+        onOpenTermsModal={() => setIsTermsOfUseModal(true)}
+        onOpenPrivacyModal={() => setIsPrivacyPolicyModal(true)}
       />
 
-
-      {/* =================================================
-          LAYOUT BODY
-      ================================================= */}
-
-      <div
-        className={
-          styles.layoutBody
-        }
-      >
-
-        {/* =================================================
-            SIDEBAR
-        ================================================= */}
-
+      <div className={styles.layoutBody}>
         <Sidebar
-
-          onPaymentClick={
-            handleOpenPayoutConnect
-          }
-
-          onLogoutClick={
-            handleOpenLogout
-          }
-
+          onPaymentClick={() => setIsPayoutConnectModal(true)}
+          onLogoutClick={() => setIsLogoutModal(true)}
         />
 
-
-        {/* =================================================
-            MAIN
-        ================================================= */}
-
-        <main
-          className={
-            styles.main
-          }
-        >
-
+        <main className={styles.main}>
           <Outlet
             context={{
-
-              // ==========================================
-              // USER
-              // ==========================================
-
               user,
-
               setUser,
-
-
-              // ==========================================
-              // TENANTS
-              //
-              // These are primarily for landlord pages.
-              // ==========================================
-
               tenants,
-
               tenantsLoading,
-
               getTenants,
-
-
-              // ==========================================
-              // PROFILE
-              // ==========================================
-
               setIsEditProfileModal,
-
-
-              // ==========================================
-              // TENANT ACTIONS
-              // ==========================================
-
-              openEditTenant:
-                handleOpenEditTenant,
-
-              openDeleteTenant:
-                handleOpenDeleteTenant,
-
+              selectedTenant,
+              setSelectedTenant,
+              tenantToDelete,
+              setTenantToDelete,
+              openEditTenant: (t) => {
+                setSelectedTenant(t);
+                setIsEditTenantModal(true);
+              },
+              openDeleteTenant: (t) => {
+                setTenantToDelete(t);
+                setIsDeleteTenantModal(true);
+              },
+              subscription,
+              openChoosePlanModal: () => setIsChoosePlanModal(true),
+              openUpgradePlanModal: () => setIsUpgradePlanModal(true),
+              openRenewPlanModal: () => setIsRenewPlanModal(true),
+              openTermsModal: () => setIsTermsOfUseModal(true),
+              openPrivacyModal: () => setIsPrivacyPolicyModal(true),
             }}
           />
-
         </main>
-
       </div>
 
-
-      {/* =================================================
-          ADD TENANT MODAL
-      ================================================= */}
-
+      {/* STANDARD TENANT MODALS */}
       {user.role === "landlord" && (
+        <>
+          <AddTenantModal
+            isAddTenantModal={isAddTenantModal}
+            setIsAddTenantModal={setIsAddTenantModal}
+            onSubmit={handleAddTenant}
+          />
 
-        <AddTenantModal
+          <EditTenantModal
+            isOpen={isEditTenantModal}
+            onClose={() => {
+              setIsEditTenantModal(false);
+              setSelectedTenant(null);
+            }}
+            tenant={selectedTenant}
+            onSubmit={handleEditTenant}
+          />
 
-          isAddTenantModal={
-            isAddTenantModal
-          }
-
-          setIsAddTenantModal={
-            setIsAddTenantModal
-          }
-
-          onSubmit={
-            handleAddTenant
-          }
-
-        />
-
+          <DeleteTenantModal
+            isOpen={isDeleteTenantModal}
+            onClose={() => {
+              setIsDeleteTenantModal(false);
+              setTenantToDelete(null);
+            }}
+            tenant={tenantToDelete}
+            onConfirm={handleDeleteTenant}
+          />
+        </>
       )}
 
-
-      {/* =================================================
-          EDIT TENANT MODAL
-      ================================================= */}
-
-      {user.role === "landlord" && (
-
-        <EditTenantModal
-
-          tenant={
-            selectedTenant
-          }
-
-          isOpen={
-            isEditTenantModal
-          }
-
-          setIsOpen={
-            (value) => {
-
-              if (!value) {
-
-                handleCloseEditTenant();
-
-                return;
-
-              }
-
-              setIsEditTenantModal(
-                value
-              );
-
-            }
-          }
-
-          onTenantUpdated={
-            async () => {
-
-              await getTenants();
-
-              handleCloseEditTenant();
-
-            }
-          }
-
-          onSubmit={
-            handleEditTenant
-          }
-
-        />
-
-      )}
-
-
-      {/* =================================================
-          DELETE TENANT MODAL
-      ================================================= */}
-
-      {user.role === "landlord" && (
-
-        <DeleteTenantModal
-
-          tenant={
-            tenantToDelete
-          }
-
-          isDeleteTenantModal={
-            isDeleteTenantModal
-          }
-
-          setIsDeleteTenantModal={
-            (value) => {
-
-              if (!value) {
-
-                handleCloseDeleteTenant();
-
-                return;
-
-              }
-
-              setIsDeleteTenantModal(
-                value
-              );
-
-            }
-          }
-
-          onDelete={
-            handleDeleteTenant
-          }
-
-        />
-
-      )}
-
-
-      {/* =================================================
-          EDIT PROFILE MODAL
-      ================================================= */}
-
-      <EditProfileModal
-
-        isEditProfileModal={
-          isEditProfileModal
-        }
-
-        setIsEditProfileModal={
-          setIsEditProfileModal
-        }
-
-        user={
-          user
-        }
-
-        setUser={
-          setUser
-        }
-
+      {/* SUBSCRIPTION MODALS */}
+      <ChoosePlanModal
+        isOpen={isChoosePlanModal}
+        onClose={() => setIsChoosePlanModal(false)}
+        currentPlan={subscription.plan_type}
+        onPlanUpdated={fetchSubscriptionStatus}
       />
 
+      <UpgradePlanModal
+        isOpen={isUpgradePlanModal}
+        onClose={() => setIsUpgradePlanModal(false)}
+        currentPlan={subscription.plan_type}
+      />
 
-      {/* =================================================
-          PAYSTACK CONNECT MODAL
-      ================================================= */}
+      <RenewPlanModal
+        isOpen={isRenewPlanModal}
+        onClose={() => setIsRenewPlanModal(false)}
+        currentPlan={subscription.plan_type}
+        expiryDate={subscription.current_period_end}
+      />
+
+      {/* USER & PAYOUT MODALS */}
+      <EditProfileModal
+        isEditProfileModal={isEditProfileModal}
+        setIsEditProfileModal={setIsEditProfileModal}
+        user={user}
+        setUser={setUser}
+      />
 
       <PayoutConnectModal
-
-        isOpen={
-          isPayoutConnectModal
-        }
-
-        setIsOpen={
-          setIsPayoutConnectModal
-        }
-
-        user={
-          user
-        }
-
+        isOpen={isPayoutConnectModal}
+        setIsOpen={setIsPayoutConnectModal}
+        user={user}
       />
-
-
-      {/* =================================================
-          LOGOUT MODAL
-      ================================================= */}
 
       <LogoutModal
-
-        isLogoutModal={
-          isLogoutModal
-        }
-
-        setIsLogoutModal={
-          setIsLogoutModal
-        }
-
+        isLogoutModal={isLogoutModal}
+        setIsLogoutModal={setIsLogoutModal}
       />
 
+      {/* LEGAL POLICY MODALS */}
+      <PrivacyPolicyModal
+        isOpen={isPrivacyPolicyModal}
+        onClose={() => setIsPrivacyPolicyModal(false)}
+      />
+
+      <TermsOfUseModal
+        isOpen={isTermsOfUseModal}
+        onClose={() => setIsTermsOfUseModal(false)}
+      />
     </div>
-
   );
-
 }
-
 
 export default Layout;

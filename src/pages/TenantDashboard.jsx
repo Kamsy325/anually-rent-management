@@ -1,6 +1,8 @@
+// TenantDashboard.jsx
+
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { FiCheck, FiClock, FiAlertCircle } from "react-icons/fi";
+import { FiCheck, FiClock, FiAlertCircle, FiLock } from "react-icons/fi";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import styles from "../css/TenantDashboard.module.css";
 
@@ -8,11 +10,13 @@ const API_URL = "http://localhost:5000";
 
 export default function TenantDashboard() {
   const navigate = useNavigate();
-  const { user } = useOutletContext();
+  const { user } = useOutletContext() || {};
 
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [isLocked, setIsLocked] = useState(false);
+  const [lockedMessage, setLockedMessage] = useState("");
   const [processingPaymentId, setProcessingPaymentId] = useState(null);
 
   const loadDashboard = async () => {
@@ -33,12 +37,34 @@ export default function TenantDashboard() {
         },
       });
 
+      // Check if tenant status is locked or landlord subscription is flagged as expired/locked
+      if (
+        response.data?.isLocked ||
+        response.data?.tenant?.status === "Locked"
+      ) {
+        setIsLocked(true);
+        setLockedMessage(
+          response.data?.message ||
+            "Your account Is Locked, your landlord's plan is expired."
+        );
+        return;
+      }
+
       setDashboardData(response.data);
     } catch (err) {
       if (err.response?.status === 401) {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
         navigate("/", { replace: true });
+        return;
+      }
+
+      if (err.response?.status === 403 && err.response?.data?.isLocked) {
+        setIsLocked(true);
+        setLockedMessage(
+          err.response?.data?.message ||
+            "Your account Is Locked, your landlord's plan is expired."
+        );
         return;
       }
 
@@ -102,6 +128,25 @@ export default function TenantDashboard() {
         <div className={styles.loadingContainer}>
           <div className={styles.loadingSpinner} />
           <p>Loading your dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // ==================================================
+  // LOCKED ACCOUNT STATE
+  // ==================================================
+  if (isLocked) {
+    return (
+      <div className={styles.dashboardContainer}>
+        <div className={styles.emptyState} style={{ padding: "60px 20px" }}>
+          <FiLock size={48} color="#dc2626" style={{ marginBottom: "16px" }} />
+          <h1 style={{ fontSize: "1.75rem", fontWeight: "700", color: "#111827", marginBottom: "8px" }}>
+            Your account Is Locked
+          </h1>
+          <p style={{ color: "#4b5563", fontSize: "1rem", maxWidth: "420px", margin: "0 auto" }}>
+            {lockedMessage || "Your landlord's plan is expired."}
+          </p>
         </div>
       </div>
     );
@@ -180,7 +225,6 @@ export default function TenantDashboard() {
     (payment) => getPaymentStatus(payment) === "paid"
   );
 
-  // Filter pending payments: Ensure future payments (daysUntilDue > 0) are NOT rendered in Pending
   const pendingPayments =
     apiPendingPayments.length > 0
       ? apiPendingPayments

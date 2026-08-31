@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-
+import { useGoogleLogin } from "@react-oauth/google";
 import {
   FiBarChart2,
   FiEyeOff,
@@ -8,449 +8,180 @@ import {
   FiUsers,
   FiBell,
 } from "react-icons/fi";
-
 import { FcGoogle } from "react-icons/fc";
-
 import { useNavigate } from "react-router-dom";
-
 import axios from "axios";
-
 import styles from "../css/Auth.module.css";
-
+import PrivacyPolicyModal from "../Modals/PrivacyPolicyModal";
+import TermsOfUseModal from "../Modals/TermsOfUseModal";
 
 export default function Login() {
-
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
-
   const [password, setPassword] = useState("");
-
-  const [showPassword, setShowPassword] =
-    useState(false);
-
-  const [error, setError] =
-    useState("");
-
-  const [loading, setLoading] =
-    useState(false);
-
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [isPrivacyModal, setIsPrivacyModal] = useState(false);
+  const [isTermsModal, setIsTermsModal] = useState(false);
 
   // ==================================================
-  // LOGIN
+  // GOOGLE LOGIN HANDLER
   // ==================================================
-
-  const handleSubmit = async (e) => {
-
-    e.preventDefault();
-
-    setError("");
-
-
-    // ==================================================
-    // VALIDATION
-    // ==================================================
-
-    if (!email.trim() || !password) {
-
-      setError(
-        "Email and password are required."
-      );
-
-      return;
-
-    }
-
-
+  const handleGoogleSuccess = async (tokenResponse) => {
     try {
-
       setLoading(true);
+      setError("");
 
+      const response = await axios.post("http://localhost:5000/google", {
+        access_token: tokenResponse.access_token,
+      });
 
-      // ==================================================
-      // LOGIN REQUEST
-      // ==================================================
+      const { token, role, user } = response.data;
 
-      const response = await axios.post(
-        "http://localhost:5000/login",
-        {
-          email: email.trim().toLowerCase(),
-          password,
-        }
-      );
-
-
-      console.log(
-        "LOGIN RESPONSE:",
-        response.data
-      );
-
-
-      // ==================================================
-      // GET TOKEN
-      // ==================================================
-
-      const token =
-        response.data?.token;
-
-
-      // ==================================================
-      // GET ROLE
-      // ==================================================
-
-      const backendRole =
-        response.data?.role;
-
-
-      const role =
-        String(
-          backendRole || ""
-        )
-          .trim()
-          .toLowerCase();
-
-
-      // ==================================================
-      // GET USER
-      // ==================================================
-
-      const backendUser =
-        response.data?.user;
-
-
-      console.log(
-        "BACKEND ROLE:",
-        backendRole
-      );
-
-      console.log(
-        "NORMALIZED ROLE:",
-        role
-      );
-
-      console.log(
-        "BACKEND USER:",
-        backendUser
-      );
-
-
-      // ==================================================
-      // CHECK TOKEN
-      // ==================================================
-
-      if (!token) {
-
-        setError(
-          "Login succeeded but no authentication token was returned."
-        );
-
+      if (!token || !user) {
+        setError("Google authentication failed.");
         return;
-
       }
 
-
-      // ==================================================
-      // CHECK USER
-      // ==================================================
-
-      if (!backendUser) {
-
-        setError(
-          "Login succeeded but no user data was returned."
-        );
-
-        return;
-
-      }
-
-
-      // ==================================================
-      // CHECK ROLE
-      // ==================================================
-
-      if (
-        role !== "landlord" &&
-        role !== "tenant"
-      ) {
-
-        console.error(
-          "INVALID ROLE RECEIVED:",
-          backendRole
-        );
-
-        setError(
-          "Your account type could not be determined."
-        );
-
-        return;
-
-      }
-
-
-      // ==================================================
-      // CREATE FRONTEND USER
-      //
-      // IMPORTANT:
-      //
-      // The backend may return role separately:
-      //
-      // {
-      //   token,
-      //   role,
-      //   user
-      // }
-      //
-      // We explicitly put role inside user.
-      // ==================================================
-
-      const user = {
-
-        ...backendUser,
-
+      const finalUser = {
+        ...user,
         role: role,
-
       };
 
-
-      console.log(
-        "FINAL USER OBJECT:",
-        user
-      );
-
-
-      // ==================================================
-      // CLEAR OLD AUTH DATA
-      // ==================================================
-
       localStorage.removeItem("token");
-
       localStorage.removeItem("user");
 
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(finalUser));
 
-      // ==================================================
-      // SAVE TOKEN
-      // ==================================================
-
-      localStorage.setItem(
-        "token",
-        token
-      );
-
-
-      // ==================================================
-      // SAVE USER
-      // ==================================================
-
-      localStorage.setItem(
-        "user",
-        JSON.stringify(user)
-      );
-
-
-      // ==================================================
-      // VERIFY STORAGE
-      // ==================================================
-
-      console.log(
-        "TOKEN SAVED:",
-        localStorage.getItem("token")
-      );
-
-      console.log(
-        "USER SAVED:",
-        localStorage.getItem("user")
-      );
-
-      console.log(
-        "SAVED ROLE:",
-        JSON.parse(
-          localStorage.getItem("user")
-        )?.role
-      );
-
-
-      // ==================================================
-      // BOTH USERS GO TO /app
-      //
-      // App.jsx decides whether to render:
-      //
-      // Dashboard
-      //
-      // OR
-      //
-      // TenantDashboard
-      // ==================================================
-
-      navigate(
-        "/app",
-        {
-          replace: true,
-        }
-      );
-
-
+      navigate("/app", { replace: true });
     } catch (err) {
-
-      console.error(
-        "LOGIN ERROR:",
-        err
+      console.error("GOOGLE LOGIN ERROR:", err);
+      setError(
+        err.response?.data?.message || "Google Sign-In failed. Please try again."
       );
-
-
-      // ==================================================
-      // SERVER ERROR
-      // ==================================================
-
-      if (err.response) {
-
-        console.error(
-          "SERVER RESPONSE:",
-          err.response.data
-        );
-
-
-        setError(
-          err.response.data?.message ||
-          "Invalid email or password."
-        );
-
-      }
-
-
-      // ==================================================
-      // NO RESPONSE
-      // ==================================================
-
-      else if (err.request) {
-
-        setError(
-          "Unable to connect to the server. Make sure your backend is running."
-        );
-
-      }
-
-
-      // ==================================================
-      // OTHER ERROR
-      // ==================================================
-
-      else {
-
-        setError(
-          "Something went wrong. Please try again."
-        );
-
-      }
-
     } finally {
-
       setLoading(false);
-
     }
-
   };
 
+  const googleLogin = useGoogleLogin({
+    onSuccess: handleGoogleSuccess,
+    onError: () => setError("Google Sign-In was cancelled or failed."),
+  });
+
+  // ==================================================
+  // STANDARD LOGIN HANDLER
+  // ==================================================
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    if (!email.trim() || !password) {
+      setError("Email and password are required.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const response = await axios.post("http://localhost:5000/login", {
+        email: email.trim().toLowerCase(),
+        password,
+      });
+
+      const token = response.data?.token;
+      const backendRole = response.data?.role;
+      const role = String(backendRole || "").trim().toLowerCase();
+      const backendUser = response.data?.user;
+
+      if (!token) {
+        setError("Login succeeded but no authentication token was returned.");
+        return;
+      }
+
+      if (!backendUser) {
+        setError("Login succeeded but no user data was returned.");
+        return;
+      }
+
+      if (role !== "landlord" && role !== "tenant") {
+        setError("Your account type could not be determined.");
+        return;
+      }
+
+      const user = {
+        ...backendUser,
+        role: role,
+      };
+
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+
+      navigate("/app", { replace: true });
+    } catch (err) {
+      console.error("LOGIN ERROR:", err);
+
+      if (err.response) {
+        setError(err.response.data?.message || "Invalid email or password.");
+      } else if (err.request) {
+        setError("Unable to connect to the server. Make sure your backend is running.");
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-
     <div className={styles.exportWrapper}>
-
       <div className={styles.authScreen}>
-
-        {/* ==================================================
-            LOGIN PANEL
-        ================================================== */}
-
+        {/* LOGIN PANEL */}
         <div className={styles.formPanel}>
-
           {/* LOGO */}
-
           <div className={styles.logo}>
-
             <div className={styles.logoIcon}>
-
-              <FiBarChart2
-                size={20}
-                strokeWidth={2.4}
-              />
-
+              <FiBarChart2 size={20} strokeWidth={2.4} />
             </div>
-
-            <span className={styles.logoText}>
-              Annually
-            </span>
-
+            <span className={styles.logoText}>Annually</span>
           </div>
 
-
           {/* FORM */}
-
-          <form
-            className={styles.formContainer}
-            onSubmit={handleSubmit}
-          >
-
+          <form className={styles.formContainer} onSubmit={handleSubmit}>
             <div>
-
-              <h1 className={styles.formTitle}>
-                Welcome back
-              </h1>
-
-              <p className={styles.formSubtitle}>
-                Sign in to manage your account.
-              </p>
-
+              <h1 className={styles.formTitle}>Welcome back</h1>
+              <p className={styles.formSubtitle}>Sign in to manage your account.</p>
             </div>
 
-
-            {/* GOOGLE */}
-
+            {/* GOOGLE BUTTON */}
             <button
               type="button"
               className={styles.googleButton}
+              onClick={() => googleLogin()}
               disabled={loading}
             >
-
               <FcGoogle size={18} />
-
-              <span>
-                Continue with Google
-              </span>
-
+              <span>Continue with Google</span>
             </button>
 
-
             {/* DIVIDER */}
-
             <div className={styles.divider}>
-
-              <div
-                className={styles.dividerLine}
-              />
-
-              <span>
-                or sign in with email
-              </span>
-
-              <div
-                className={styles.dividerLine}
-              />
-
+              <div className={styles.dividerLine} />
+              <span>or sign in with email</span>
+              <div className={styles.dividerLine} />
             </div>
 
-
             {/* FIELDS */}
-
             <div className={styles.fields}>
-
               {/* EMAIL */}
-
               <div className={styles.field}>
-
-                <label htmlFor="email">
-                  Email address
-                </label>
-
+                <label htmlFor="email">Email address</label>
                 <input
                   id="email"
                   name="email"
@@ -458,88 +189,52 @@ export default function Login() {
                   className={styles.input}
                   placeholder="jane@example.com"
                   value={email}
-                  onChange={(e) =>
-                    setEmail(e.target.value)
-                  }
+                  onChange={(e) => setEmail(e.target.value)}
                   autoComplete="email"
                   disabled={loading}
                 />
-
               </div>
 
-
               {/* PASSWORD */}
-
               <div className={styles.field}>
-
-                <label htmlFor="password">
-                  Password
-                </label>
-
-                <div
-                  className={`${styles.input} ${styles.passwordInput}`}
-                >
-
+                <label htmlFor="password">Password</label>
+                <div className={`${styles.input} ${styles.passwordInput}`}>
                   <input
                     id="password"
                     name="password"
-                    type={
-                      showPassword
-                        ? "text"
-                        : "password"
-                    }
+                    type={showPassword ? "text" : "password"}
                     placeholder="••••••••"
                     value={password}
-                    onChange={(e) =>
-                      setPassword(e.target.value)
-                    }
+                    onChange={(e) => setPassword(e.target.value)}
                     autoComplete="current-password"
                     disabled={loading}
                     style={{
                       border: "none",
                       outline: "none",
                       width: "100%",
-                      background:
-                        "transparent",
+                      background: "transparent",
                     }}
                   />
 
                   <button
                     type="button"
                     className={styles.eyeButton}
-                    onClick={() =>
-                      setShowPassword(
-                        (previous) =>
-                          !previous
-                      )
-                    }
+                    onClick={() => setShowPassword((previous) => !previous)}
                     disabled={loading}
-                    aria-label={
-                      showPassword
-                        ? "Hide password"
-                        : "Show password"
-                    }
+                    aria-label={showPassword ? "Hide password" : "Show password"}
                   >
-
                     {showPassword ? (
                       <FiEye size={16} />
                     ) : (
                       <FiEyeOff size={16} />
                     )}
-
                   </button>
-
                 </div>
-
               </div>
-
             </div>
 
-
             {/* ERROR */}
-
             {error && (
-
               <p
                 role="alert"
                 style={{
@@ -550,37 +245,24 @@ export default function Login() {
               >
                 {error}
               </p>
-
             )}
 
-
-            {/* LOGIN */}
-
+            {/* LOGIN BUTTON */}
             <button
               type="submit"
               className={styles.primaryButton}
               disabled={loading}
             >
-
-              {loading
-                ? "Signing in..."
-                : "Log In"}
-
+              {loading ? "Signing in..." : "Log In"}
             </button>
 
-
             {/* SIGN UP */}
-
             <p className={styles.signInText}>
-
               Don't have an account?{" "}
-
               <button
                 type="button"
                 className={styles.primaryLink}
-                onClick={() =>
-                  navigate("/signup")
-                }
+                onClick={() => navigate("/signup")}
                 disabled={loading}
                 style={{
                   border: "none",
@@ -591,201 +273,117 @@ export default function Login() {
               >
                 Sign up
               </button>
-
             </p>
-
           </form>
 
-
           {/* TERMS */}
-
           <p className={styles.terms}>
-
-            By signing in, you agree to our{" "}
-
-            <a
-              href="#"
-              className={styles.termsLink}
-              onClick={(e) =>
-                e.preventDefault()
-              }
-            >
-              Terms of Use
-            </a>{" "}
-
-            and{" "}
-
-            <a
-              href="#"
-              className={styles.termsLink}
-              onClick={(e) =>
-                e.preventDefault()
-              }
-            >
-              Privacy Policy
-            </a>
-
-          </p>
-
-        </div>
-
-
-        {/* RIGHT PANEL */}
-
-        <AuthInfoPanel />
-
-      </div>
-
-    </div>
-
-  );
-
-}
-
-
-/* ==================================================
-   INFORMATION PANEL
-================================================== */
-
-function AuthInfoPanel() {
-
-  return (
-
-    <div className={styles.infoPanel}>
-
-      <div className={styles.topCircle} />
-
-      <div className={styles.bottomCircle} />
-
-
-      <div className={styles.infoTop}>
-
-        <div className={styles.trustedBadge}>
-
-          <FiShield size={14} />
-
-          <span>
-            Trusted by 3,000+ landlords
-          </span>
-
-        </div>
-
-
-        <h2 className={styles.infoTitle}>
-          Everything you need to manage
-          your rentals
-        </h2>
-
-
-        <p className={styles.infoDescription}>
-          Track rent payments, manage tenants,
-          and stay on top of your property
-          portfolio — all in one place.
+          By signing in, you agree to our{" "}
+          <button
+            type="button"
+            className={styles.termsLink}
+            onClick={() => setIsTermsModal(true)}
+            style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}
+          >
+            Terms of Use
+          </button>{" "}
+          and{" "}
+          <button
+            type="button"
+            className={styles.termsLink}
+            onClick={() => setIsPrivacyModal(true)}
+            style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}
+          >
+            Privacy Policy
+          </button>
         </p>
 
+        {/* MODALS RENDERED AT BOTTOM OF LOGIN */}
+        <PrivacyPolicyModal
+          isOpen={isPrivacyModal}
+          onClose={() => setIsPrivacyModal(false)}
+        />
+        <TermsOfUseModal
+          isOpen={isTermsModal}
+          onClose={() => setIsTermsModal(false)}
+        />
+        </div>
+
+        {/* RIGHT PANEL */}
+        <AuthInfoPanel />
+      </div>
+    </div>
+  );
+}
+
+/* INFORMATION PANEL */
+function AuthInfoPanel() {
+  return (
+    <div className={styles.infoPanel}>
+      <div className={styles.topCircle} />
+      <div className={styles.bottomCircle} />
+
+      <div className={styles.infoTop}>
+        <div className={styles.trustedBadge}>
+          <FiShield size={14} />
+          <span>Trusted by 3,000+ landlords</span>
+        </div>
+
+        <h2 className={styles.infoTitle}>
+          Everything you need to manage your rentals
+        </h2>
+
+        <p className={styles.infoDescription}>
+          Track rent payments, manage tenants, and stay on top of your property
+          portfolio — all in one place.
+        </p>
       </div>
 
-
       <div className={styles.features}>
-
         <Feature
-          icon={
-            <FiBarChart2 size={18} />
-          }
+          icon={<FiBarChart2 size={18} />}
           title="Revenue Overview"
           description="Real-time income & expense tracking"
         />
 
         <Feature
-          icon={
-            <FiUsers size={18} />
-          }
+          icon={<FiUsers size={18} />}
           title="Tenant Management"
           description="Profiles, leases & communication"
         />
 
         <Feature
-          icon={
-            <FiBell size={18} />
-          }
+          icon={<FiBell size={18} />}
           title="Payment Reminders"
           description="Automated alerts & notifications"
         />
-
       </div>
-
 
       <div className={styles.testimonial}>
-
         <p className={styles.quote}>
-          "Annually cut my admin time in half.
-          Rent tracking is effortless now."
+          "Annually cut my admin time in half. Rent tracking is effortless now."
         </p>
-
 
         <div className={styles.person}>
-
-          <div className={styles.avatar}>
-            MK
-          </div>
-
-
+          <div className={styles.avatar}>MK</div>
           <div>
-
-            <p className={styles.personName}>
-              Marcus K.
-            </p>
-
-            <p className={styles.personRole}>
-              Landlord, 12 units
-            </p>
-
+            <p className={styles.personName}>Marcus K.</p>
+            <p className={styles.personRole}>Landlord, 12 units</p>
           </div>
-
         </div>
-
       </div>
-
     </div>
-
   );
-
 }
 
-
-/* ==================================================
-   FEATURE
-================================================== */
-
-function Feature({
-  icon,
-  title,
-  description,
-}) {
-
+function Feature({ icon, title, description }) {
   return (
-
     <div className={styles.feature}>
-
-      <div className={styles.featureIcon}>
-        {icon}
-      </div>
-
-
+      <div className={styles.featureIcon}>{icon}</div>
       <div>
-
-        <p className={styles.featureTitle}>
-          {title}
-        </p>
-
-        <p className={styles.featureDescription}>
-          {description}
-        </p>
-
+        <p className={styles.featureTitle}>{title}</p>
+        <p className={styles.featureDescription}>{description}</p>
       </div>
-
     </div>
-
   );
-
 }
