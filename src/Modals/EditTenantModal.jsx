@@ -1,12 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  FiX,
-  FiUser,
-  FiMail,
-  FiPhone,
-  FiHome,
-  FiDollarSign,
-} from "react-icons/fi";
+import { FiX, FiUser, FiMail, FiPhone, FiHome } from "react-icons/fi";
 import styles from "../css/Modals.module.css";
 
 export default function EditTenantModal({
@@ -27,7 +20,6 @@ export default function EditTenantModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Populate form state when tenant updates
   useEffect(() => {
     if (!tenant) return;
 
@@ -54,7 +46,9 @@ export default function EditTenantModal({
   const handleClose = () => {
     if (loading) return;
     setError("");
-    onClose();
+    if (typeof onClose === "function") {
+      onClose();
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -70,7 +64,9 @@ export default function EditTenantModal({
       setLoading(true);
       await onSubmit(formData);
     } catch (err) {
-      setError(err.response?.data?.message || err.message || "Failed to update tenant.");
+      setError(
+        err.response?.data?.message || err.message || "Failed to update tenant."
+      );
     } finally {
       setLoading(false);
     }
@@ -79,12 +75,19 @@ export default function EditTenantModal({
   if (!isOpen || !tenant) return null;
 
   return (
-    <div className={styles.overlay} onMouseDown={handleClose}>
-      <div className={styles.modal} onMouseDown={(e) => e.stopPropagation()}>
+    <div
+      className={styles.overlay}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) handleClose();
+      }}
+    >
+      <div className={styles.modal}>
         <div className={styles.modalHeader}>
           <div>
             <h2 className={styles.modalTitle}>Edit Tenant</h2>
-            <p className={styles.modalDescription}>Update tenant information</p>
+            <p className={styles.modalDescription}>
+              Update tenant information
+            </p>
           </div>
 
           <button
@@ -166,9 +169,9 @@ export default function EditTenantModal({
             </div>
 
             <div className={styles.formGroup}>
-              <label>Monthly Rent</label>
+              <label>Monthly Rent (₦)</label>
               <div className={styles.inputWrapper}>
-                <FiDollarSign />
+                <span style={{ fontWeight: 600, paddingLeft: "8px" }}>₦</span>
                 <input
                   name="rent"
                   type="number"

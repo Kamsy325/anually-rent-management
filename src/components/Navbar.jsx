@@ -1,5 +1,3 @@
-// Navbar.jsx
-
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import {
@@ -16,7 +14,6 @@ import styles from "../css/Layout.module.css";
 
 const API_URL = "http://localhost:5000";
 
-// Define plan limit thresholds
 const PLAN_LIMITS = {
   free: 5,
   pro: 8,
@@ -27,19 +24,21 @@ const PLAN_LIMITS = {
 const Navbar = ({
   setIsAddTenantModal,
   onOpenUpgradeModal,
+  onOpenPayoutModal,
   user,
   onUpdateUser,
   tenants = [],
   subscription = { plan_type: "free" },
   onOpenTermsModal,
-  onOpenPrivacyModal
+  onOpenPrivacyModal,
+  onLogoutClick,
+  isPayoutConnected = false,
 }) => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
 
-  // Edit Profile Modal States
   const [showEditProfileModal, setShowEditProfileModal] = useState(false);
   const [profileForm, setProfileForm] = useState({
     firstName: "",
@@ -54,20 +53,47 @@ const Navbar = ({
 
   const notificationRef = useRef(null);
   const profileRef = useRef(null);
+  const isLandlord = user?.role === "landlord";
 
-  // Check tenant limit before deciding which modal to open
   const handleAddTenantClick = () => {
-    const currentPlan = subscription?.plan_type || "free";
-    const maxTenants = PLAN_LIMITS[currentPlan] ?? 3;
+    console.log("--- [NAVBAR] Add Tenant Button Clicked ---");
+    console.log("[NAVBAR] Props received:", {
+      isPayoutConnected,
+      user_paystack_subaccount_code: user?.paystack_subaccount_code,
+      user_paystack_connected: user?.paystack_connected,
+      tenants_count: tenants.length,
+      subscription_plan: subscription?.plan_type,
+      has_setIsAddTenantModal: typeof setIsAddTenantModal === "function",
+      has_onOpenPayoutModal: typeof onOpenPayoutModal === "function",
+      has_onOpenUpgradeModal: typeof onOpenUpgradeModal === "function",
+    });
+
+    const hasPaystackSubaccount =
+      isPayoutConnected ||
+      Boolean(user?.paystack_subaccount_code) ||
+      Boolean(user?.paystack_connected);
+
+    if (!hasPaystackSubaccount) {
+      if (onOpenPayoutModal) {
+        onOpenPayoutModal();
+      }
+      return;
+    }
+
+    const currentPlan = (subscription?.plan_type || "free").toLowerCase();
+    const maxTenants = PLAN_LIMITS[currentPlan] ?? PLAN_LIMITS.free;
 
     if (tenants.length >= maxTenants) {
-      if (onOpenUpgradeModal) onOpenUpgradeModal();
+      if (onOpenUpgradeModal) {
+        onOpenUpgradeModal();
+      }
     } else {
-      setIsAddTenantModal(true);
+      if (typeof setIsAddTenantModal === "function") {
+        setIsAddTenantModal(true);
+      }
     }
   };
 
-  // Sync profile form data when user prop changes or edit modal opens
   useEffect(() => {
     if (user) {
       setProfileForm({
@@ -90,20 +116,39 @@ const Navbar = ({
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      setNotifications(res.data.notifications || []);
+      const rawNotifications = res.data.notifications || [];
+
+      // Deduplicate using a composite key (title + message + payer name) 
+      // to handle cases where the backend sends duplicate rows with different IDs.
+      const uniqueMap = new Map();
+      rawNotifications.forEach((n) => {
+        const payerName =
+          n.sender_name ||
+          n.tenant_name ||
+          n.payer_name ||
+          n.tenant?.name ||
+          "";
+        
+        const compositeKey = `${n.title || ""}-${n.message || ""}-${payerName}`;
+        
+        if (!uniqueMap.has(compositeKey)) {
+          uniqueMap.set(compositeKey, n);
+        }
+      });
+
+      setNotifications(Array.from(uniqueMap.values()));
       setUnreadCount(res.data.unreadCount || 0);
     } catch (err) {
-      console.error("Failed to load notifications", err);
+      console.error("[NAVBAR] Failed to load notifications:", err);
     }
   };
 
   useEffect(() => {
     fetchNotifications();
-    const interval = setInterval(fetchNotifications, 60000); // Poll every minute
+    const interval = setInterval(fetchNotifications, 60000);
     return () => clearInterval(interval);
   }, []);
 
-  // Close menus when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -143,21 +188,7 @@ const Navbar = ({
       setUnreadCount(0);
       setNotifications((prev) => prev.map((n) => ({ ...n, is_read: 1 })));
     } catch (err) {
-      console.error("Error marking read", err);
-    }
-  };
-
-  const getNotificationStyle = (type) => {
-    switch (type) {
-      case "due_soon":
-      case "pending":
-        return styles.notificationIconOrange;
-      case "overdue":
-        return styles.notificationIconRed;
-      case "paid":
-        return styles.notificationIconBlue;
-      default:
-        return styles.notificationIconBlue;
+      console.error("[NAVBAR] Error marking notifications as read:", err);
     }
   };
 
@@ -188,7 +219,7 @@ const Navbar = ({
         setProfileMessage("");
       }, 1500);
     } catch (err) {
-      console.error("Failed to update profile", err);
+      console.error("[NAVBAR] Failed to update profile:", err);
       setProfileMessage(
         err.response?.data?.message || "Failed to update profile. Please try again."
       );
@@ -205,7 +236,6 @@ const Navbar = ({
   return (
     <>
       <nav className={styles.navbar}>
-        {/* BRAND */}
         <div className={styles.navbarBrand}>
           <div className={styles.navbarLogo}>
             <span className={`${styles.logoBar} ${styles.logoBar1}`} />
@@ -215,9 +245,8 @@ const Navbar = ({
           <span className={styles.navbarTitle}>Annually</span>
         </div>
 
-        {/* ACTIONS */}
         <div className={styles.navbarActions}>
-          {user?.role === "landlord" && (
+          {isLandlord && (
             <button
               type="button"
               className={styles.addTenantBtn}
@@ -228,7 +257,6 @@ const Navbar = ({
             </button>
           )}
 
-          {/* NOTIFICATIONS */}
           <div className={styles.navbarPopupWrapper} ref={notificationRef}>
             <button
               type="button"
@@ -263,28 +291,46 @@ const Navbar = ({
                       No notifications yet.
                     </p>
                   ) : (
-                    notifications.map((n) => (
-                      <div key={n.id} className={styles.notificationItem}>
-                        <div
-                          className={`${styles.notificationIcon} ${getNotificationStyle(
-                            n.type
-                          )}`}
-                        >
-                          <FiBell size={16} />
-                        </div>
+                    notifications.map((n, index) => {
+                      const payerName =
+                        n.sender_name ||
+                        n.tenant_name ||
+                        n.payer_name ||
+                        n.tenant?.name;
 
-                        <div className={styles.notificationContent}>
-                          <p>{n.title}</p>
-                          <span>{n.message}</span>
-                          <small>
-                            {new Date(n.created_at).toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
-                          </small>
+                      return (
+                        <div
+                          key={n.id || n._id || `notif-${index}`}
+                          className={styles.notificationItem}
+                        >
+                          <div className={styles.notificationContent}>
+                            <p className={styles.notificationTitle}>{n.title}</p>
+                            
+                            {payerName && (
+                              <span
+                                style={{
+                                  fontWeight: 600,
+                                  color: "#111827",
+                                  display: "block",
+                                  marginBottom: "2px",
+                                  fontSize: "0.85rem",
+                                }}
+                              >
+                                Paid by: {payerName}
+                              </span>
+                            )}
+
+                            <span>{n.message}</span>
+                            <small>
+                              {new Date(n.created_at).toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </small>
+                          </div>
                         </div>
-                      </div>
-                    ))
+                      );
+                    })
                   )}
                 </div>
 
@@ -301,7 +347,6 @@ const Navbar = ({
             )}
           </div>
 
-          {/* PROFILE */}
           <div className={styles.navbarPopupWrapper} ref={profileRef}>
             <button
               type="button"
@@ -323,7 +368,7 @@ const Navbar = ({
                   </div>
                   <div>
                     <p className={styles.profileMenuName}>
-                      {user?.firstName || user?.first_name}{" "}
+                      {user?.firstName || user?.first_name || user?.name}{" "}
                       {user?.lastName || user?.last_name}
                     </p>
                     <span className={styles.profileMenuEmail}>
@@ -333,21 +378,21 @@ const Navbar = ({
                 </div>
                 <div className={styles.profileMenuDivider} />
 
-                {/* EDIT PROFILE */}
-                <button
-                  type="button"
-                  className={styles.profileMenuItem}
-                  onClick={() => {
-                    setShowProfileMenu(false);
-                    setShowEditProfileModal(true);
-                  }}
-                >
-                  <FiEdit2 size={17} />
-                  <span>Edit Profile</span>
-                </button>
+                {isLandlord && (
+                  <button
+                    type="button"
+                    className={styles.profileMenuItem}
+                    onClick={() => {
+                      setShowProfileMenu(false);
+                      setShowEditProfileModal(true);
+                    }}
+                  >
+                    <FiEdit2 size={17} />
+                    <span>Edit Profile</span>
+                  </button>
+                )}
 
-                {/* UPGRADE PLAN */}
-                {user?.role === "landlord" && (
+                {isLandlord && (
                   <button
                     type="button"
                     className={styles.profileMenuItem}
@@ -361,8 +406,6 @@ const Navbar = ({
                   </button>
                 )}
 
-                
-                {/* TERMS OF USE */}
                 <button
                   type="button"
                   className={styles.profileMenuItem}
@@ -375,7 +418,6 @@ const Navbar = ({
                   <span>Terms of Use</span>
                 </button>
 
-                {/* PRIVACY POLICY */}
                 <button
                   type="button"
                   className={styles.profileMenuItem}
@@ -390,13 +432,12 @@ const Navbar = ({
 
                 <div className={styles.profileMenuDivider} />
 
-                {/* LOGOUT */}
                 <button
                   type="button"
                   className={`${styles.profileMenuItem} ${styles.logoutMenuItem}`}
                   onClick={() => {
-                    localStorage.clear();
-                    window.location.href = "/";
+                    setShowProfileMenu(false);
+                    if (onLogoutClick) onLogoutClick();
                   }}
                 >
                   <FiLogOut size={17} />
@@ -408,8 +449,7 @@ const Navbar = ({
         </div>
       </nav>
 
-      {/* EDIT PROFILE MODAL */}
-      {showEditProfileModal && (
+      {showEditProfileModal && isLandlord && (
         <div className={styles.modalOverlay}>
           <div className={styles.modalContainer}>
             <div className={styles.modalHeader}>

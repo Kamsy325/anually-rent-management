@@ -1,22 +1,25 @@
-import React from 'react';
+// components/Modals/LogoutModal.jsx
+
+import React from "react";
 import { FiX, FiLogOut } from "react-icons/fi";
 import styles from "../css/Modals.module.css";
 
-export default function LogoutModal({isLogoutModal, setIsLogoutModal}) {
+export default function LogoutModal({ isLogoutModal, setIsLogoutModal }) {
   const handleLogout = () => {
-    if (onConfirm) {
-      onConfirm();
-    }
-
-    onClose();
+    localStorage.clear();
+    setIsLogoutModal(false);
+    window.location.href = "/";
   };
 
   if (!isLogoutModal) {
-    return null
+    return null;
   }
 
   return (
-    <div className={styles.overlay} onMouseDown={setIsLogoutModal(false)}>
+    <div
+      className={styles.overlay}
+      onMouseDown={() => setIsLogoutModal(false)}
+    >
       <div
         className={`${styles.modal} ${styles.confirmModal}`}
         onMouseDown={(e) => e.stopPropagation()}

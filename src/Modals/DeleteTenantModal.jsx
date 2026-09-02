@@ -14,7 +14,9 @@ export default function DeleteTenantModal({
   const handleClose = () => {
     if (loading) return;
     setError("");
-    onClose();
+    if (typeof onClose === "function") {
+      onClose();
+    }
   };
 
   const handleDelete = async () => {
@@ -33,7 +35,9 @@ export default function DeleteTenantModal({
       setError("");
       await onConfirm();
     } catch (err) {
-      setError(err.response?.data?.message || err.message || "Failed to delete tenant.");
+      setError(
+        err.response?.data?.message || err.message || "Failed to delete tenant."
+      );
     } finally {
       setLoading(false);
     }
@@ -42,8 +46,13 @@ export default function DeleteTenantModal({
   if (!isOpen || !tenant) return null;
 
   return (
-    <div className={styles.overlay} onMouseDown={handleClose}>
-      <div className={styles.modal} onMouseDown={(e) => e.stopPropagation()}>
+    <div
+      className={styles.overlay}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) handleClose();
+      }}
+    >
+      <div className={styles.modal}>
         <div className={styles.modalHeader}>
           <div>
             <h2 className={styles.modalTitle}>Delete Tenant</h2>

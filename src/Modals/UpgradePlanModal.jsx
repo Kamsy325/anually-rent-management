@@ -48,7 +48,7 @@ const UpgradePlanModal = ({ isOpen, onClose, currentPlan = "free" }) => {
           <div className={styles.titleArea}>
             <h2>Upgrade Your Plan</h2>
             <p className={styles.modalSubtext}>
-              You have reached your limit on <strong>{currentPlan.toUpperCase()}</strong>. Pick an upgrade below:
+              Upgrade your plan to unlock more features. Pick an upgrade below:
             </p>
           </div>
           <button type="button" onClick={onClose} className={styles.closeBtn}>

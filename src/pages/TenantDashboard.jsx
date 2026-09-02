@@ -1,5 +1,3 @@
-// TenantDashboard.jsx
-
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { FiCheck, FiClock, FiAlertCircle, FiLock } from "react-icons/fi";
@@ -11,6 +9,13 @@ const API_URL = "http://localhost:5000";
 export default function TenantDashboard() {
   const navigate = useNavigate();
   const { user } = useOutletContext() || {};
+
+  // Role Guard inside component
+  useEffect(() => {
+    if (user && user.role !== "tenant") {
+      navigate("/app", { replace: true });
+    }
+  }, [user, navigate]);
 
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -37,7 +42,6 @@ export default function TenantDashboard() {
         },
       });
 
-      // Check if tenant status is locked or landlord subscription is flagged as expired/locked
       if (
         response.data?.isLocked ||
         response.data?.tenant?.status === "Locked"
@@ -45,7 +49,7 @@ export default function TenantDashboard() {
         setIsLocked(true);
         setLockedMessage(
           response.data?.message ||
-            "Your account Is Locked, your landlord's plan is expired."
+            "Your account is locked, your landlord's plan is expired."
         );
         return;
       }
@@ -63,7 +67,7 @@ export default function TenantDashboard() {
         setIsLocked(true);
         setLockedMessage(
           err.response?.data?.message ||
-            "Your account Is Locked, your landlord's plan is expired."
+            "Your account is locked, your landlord's plan is expired."
         );
         return;
       }
@@ -80,9 +84,13 @@ export default function TenantDashboard() {
     loadDashboard();
   }, [navigate]);
 
+  if (user?.role !== "tenant") return null;
+
   const handlePayment = async (payment) => {
     if (!payment?.id) {
-      setError("This payment cannot be processed because the payment ID is missing.");
+      setError(
+        "This payment cannot be processed because the payment ID is missing."
+      );
       return;
     }
 
@@ -107,7 +115,8 @@ export default function TenantDashboard() {
       );
 
       const authorizationUrl =
-        response.data?.authorization_url || response.data?.data?.authorization_url;
+        response.data?.authorization_url ||
+        response.data?.data?.authorization_url;
 
       if (!authorizationUrl) {
         throw new Error("Paystack authorization URL was not returned.");
@@ -116,7 +125,9 @@ export default function TenantDashboard() {
       window.location.href = authorizationUrl;
     } catch (err) {
       setError(
-        err.response?.data?.message || err.message || "Unable to initialize payment."
+        err.response?.data?.message ||
+          err.message ||
+          "Unable to initialize payment."
       );
       setProcessingPaymentId(null);
     }
@@ -133,18 +144,29 @@ export default function TenantDashboard() {
     );
   }
 
-  // ==================================================
-  // LOCKED ACCOUNT STATE
-  // ==================================================
   if (isLocked) {
     return (
       <div className={styles.dashboardContainer}>
         <div className={styles.emptyState} style={{ padding: "60px 20px" }}>
           <FiLock size={48} color="#dc2626" style={{ marginBottom: "16px" }} />
-          <h1 style={{ fontSize: "1.75rem", fontWeight: "700", color: "#111827", marginBottom: "8px" }}>
-            Your account Is Locked
+          <h1
+            style={{
+              fontSize: "1.75rem",
+              fontWeight: "700",
+              color: "#111827",
+              marginBottom: "8px",
+            }}
+          >
+            Your account is locked
           </h1>
-          <p style={{ color: "#4b5563", fontSize: "1rem", maxWidth: "420px", margin: "0 auto" }}>
+          <p
+            style={{
+              color: "#4b5563",
+              fontSize: "1rem",
+              maxWidth: "420px",
+              margin: "0 auto",
+            }}
+          >
             {lockedMessage || "Your landlord's plan is expired."}
           </p>
         </div>
@@ -189,7 +211,9 @@ export default function TenantDashboard() {
   }
 
   const tenant = dashboardData.tenant || {};
-  const payments = Array.isArray(dashboardData.payments) ? dashboardData.payments : [];
+  const payments = Array.isArray(dashboardData.payments)
+    ? dashboardData.payments
+    : [];
   const apiPendingPayments = Array.isArray(dashboardData.pendingPayments)
     ? dashboardData.pendingPayments
     : [];
@@ -199,7 +223,7 @@ export default function TenantDashboard() {
 
   const formatMoney = (amount) => {
     const value = Number(amount || 0);
-    return `$${value.toLocaleString("en-US", {
+    return `₦${value.toLocaleString("en-NG", {
       minimumFractionDigits: 0,
       maximumFractionDigits: 2,
     })}`;
@@ -227,19 +251,17 @@ export default function TenantDashboard() {
 
   const pendingPayments =
     apiPendingPayments.length > 0
-      ? apiPendingPayments
-      : payments.filter((payment) => {
-          const status = getPaymentStatus(payment);
-          const days = payment.daysUntilDue;
-          return status === "pending" && (days === null || days <= 0);
-        });
+      ? apiPendingPayments.filter(
+          (payment) => getPaymentStatus(payment) === "pending"
+        )
+      : payments.filter((payment) => getPaymentStatus(payment) === "pending");
 
   const overduePayments =
     apiOverduePayments.length > 0
-      ? apiOverduePayments
-      : payments.filter(
+      ? apiOverduePayments.filter(
           (payment) => getPaymentStatus(payment) === "overdue"
-        );
+        )
+      : payments.filter((payment) => getPaymentStatus(payment) === "overdue");
 
   const totalPaid = paidPayments.reduce(
     (total, payment) => total + Number(payment.amount || payment.rent || 0),
@@ -275,11 +297,17 @@ export default function TenantDashboard() {
 
   const getOverdueNote = (payment) => {
     if (payment.note) return payment.note;
-    if (payment.daysOverdue) return `${payment.daysOverdue} days overdue`;
-    if (payment.days_overdue) return `${payment.days_overdue} days overdue`;
-    if (typeof payment.daysUntilDue === "number" && payment.daysUntilDue < 0) {
-      return `${Math.abs(payment.daysUntilDue)} days overdue`;
+
+    const daysOverdue = payment.daysOverdue || payment.days_overdue;
+    if (daysOverdue && Number(daysOverdue) > 0) {
+      return `${daysOverdue} day${Number(daysOverdue) > 1 ? "s" : ""} overdue`;
     }
+
+    if (typeof payment.daysUntilDue === "number" && payment.daysUntilDue < 0) {
+      const overdueDays = Math.abs(payment.daysUntilDue);
+      return `${overdueDays} day${overdueDays > 1 ? "s" : ""} overdue`;
+    }
+
     return null;
   };
 
@@ -292,7 +320,6 @@ export default function TenantDashboard() {
 
   return (
     <div className={styles.dashboardContainer}>
-      {/* HEADER */}
       <div className={styles.header}>
         <h1 className={styles.title}>Payment History</h1>
         <p className={styles.subtitle}>
@@ -300,7 +327,6 @@ export default function TenantDashboard() {
         </p>
       </div>
 
-      {/* SUMMARY METRICS */}
       <div className={styles.summaryGrid}>
         <div className={styles.summaryCard}>
           <div>
@@ -327,7 +353,6 @@ export default function TenantDashboard() {
         </div>
       </div>
 
-      {/* PAID PAYMENTS */}
       <div className={styles.section}>
         <h2 className={styles.sectionTitle}>
           <FiCheck size={18} className={styles.iconSuccess} />
@@ -356,14 +381,15 @@ export default function TenantDashboard() {
                     <FiCheck size={12} />
                   </div>
                 </div>
-                <p className={styles.date}>{formatDate(getPaymentDate(item))}</p>
+                <p className={styles.date}>
+                  {formatDate(getPaymentDate(item))}
+                </p>
               </div>
             ))}
           </div>
         )}
       </div>
 
-      {/* PENDING PAYMENTS */}
       <div className={styles.section}>
         <h2 className={styles.sectionTitle}>
           <FiClock size={18} className={styles.iconPending} />
@@ -395,7 +421,9 @@ export default function TenantDashboard() {
                       <FiClock size={12} />
                     </div>
                   </div>
-                  <p className={styles.date}>{formatDate(getPaymentDate(item))}</p>
+                  <p className={styles.date}>
+                    {formatDate(getPaymentDate(item))}
+                  </p>
                   <button
                     type="button"
                     className={styles.payButton}
@@ -411,7 +439,6 @@ export default function TenantDashboard() {
         )}
       </div>
 
-      {/* OVERDUE PAYMENTS */}
       <div className={styles.section}>
         <h2 className={styles.sectionTitle}>
           <FiAlertCircle size={18} className={styles.iconOverdue} />
@@ -444,7 +471,9 @@ export default function TenantDashboard() {
                       <FiAlertCircle size={12} />
                     </div>
                   </div>
-                  <p className={styles.date}>{formatDate(getPaymentDate(item))}</p>
+                  <p className={styles.date}>
+                    {formatDate(getPaymentDate(item))}
+                  </p>
                   {overdueNote && (
                     <p className={styles.overdueText}>{overdueNote}</p>
                   )}
