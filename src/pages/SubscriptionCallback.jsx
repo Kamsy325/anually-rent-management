@@ -9,7 +9,7 @@ export default function SubscriptionCallback() {
   const reference = searchParams.get("reference") || searchParams.get("trxref");
   const navigate = useNavigate();
 
-  const [status, setStatus] = useState("verifying"); // 'verifying' | 'success' | 'error'
+  const [status, setStatus] = useState("verifying");
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
@@ -23,19 +23,33 @@ export default function SubscriptionCallback() {
       try {
         const token = localStorage.getItem("token");
 
-        // Send reference to backend to verify payment with Paystack
+        // Verify transaction with backend[cite: 9]
         await axios.get(
-        `http://localhost:5000/subscription/verify/${reference}`,
-        {
+          `http://localhost:5000/subscription/verify/${reference}`,
+          {
             headers: {
-            Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${token}`,
             },
-        }
+          }
         );
+
+        // Fetch latest subscription status to sync user session
+        const subRes = await axios.get(
+          `http://localhost:5000/subscription/status`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+        storedUser.subscription = subRes.data;
+        localStorage.setItem("user", JSON.stringify(storedUser));
 
         setStatus("success");
 
-        // Redirect user back to dashboard or subscription settings after 2s
+        // Redirect user back to dashboard after 2s[cite: 9]
         setTimeout(() => {
           navigate("/app", { replace: true });
         }, 2000);
