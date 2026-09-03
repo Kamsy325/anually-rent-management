@@ -11,7 +11,7 @@ import {
 } from "react-icons/fi";
 import styles from "../css/Dashboard.module.css";
 
-const API_URL = "https://anually-rent-management-backend.iamkamsy325.workers.dev";
+const API_URL = "https://anually-rent-management-backend.onrender.com";
 
 function formatMoney(amount) {
   const value = Number(amount || 0);

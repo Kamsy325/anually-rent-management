@@ -12,7 +12,7 @@ import {
 } from "react-icons/fi";
 import styles from "../css/Layout.module.css";
 
-const API_URL = "https://anually-rent-management-backend.iamkamsy325.workers.dev";
+const API_URL = "https://anually-rent-management-backend.onrender.com";
 
 const PLAN_LIMITS = {
   free: 5,

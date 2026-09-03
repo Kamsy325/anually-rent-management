@@ -13,7 +13,7 @@ import LogoutModal from "../Modals/LogoutModal";
 import PayoutConnectModal from "../Modals/PaystackConnectModal";
 import UpgradePlanModal from "../Modals/UpgradePlanModal";
 
-const API_URL = "https://anually-rent-management-backend.iamkamsy325.workers.dev";
+const API_URL = "https://anually-rent-management-backend.onrender.com";
 
 function Layout() {
   const navigate = useNavigate();

@@ -3,7 +3,7 @@ import axios from "axios";
 import { FiX, FiRefreshCw, FiCalendar } from "react-icons/fi";
 import styles from "../css/SubscriptionModal.module.css";
 
-const API_URL = "https://anually-rent-management-backend.iamkamsy325.workers.dev";
+const API_URL = "https://anually-rent-management-backend.onrender.com";
 
 const RENEW_PRICES = {
   free: 0,

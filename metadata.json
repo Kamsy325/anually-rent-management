@@ -1,0 +1,6 @@
+{
+  "name": "Anually",
+  "description": "Rent management platform for landlords and tenants",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

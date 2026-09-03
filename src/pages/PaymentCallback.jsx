@@ -85,7 +85,7 @@ export default function PaymentCallback() {
 
         const response =
           await axios.get(
-            `https://anually-rent-management-backend.iamkamsy325.workers.dev/payments/verify/${encodeURIComponent(
+            `https://anually-rent-management-backend.onrender.com/payments/verify/${encodeURIComponent(
               reference
             )}`,
             {

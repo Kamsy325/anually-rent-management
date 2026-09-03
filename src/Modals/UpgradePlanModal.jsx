@@ -4,7 +4,7 @@ import axios from "axios";
 import { FiX, FiArrowRight } from "react-icons/fi";
 import styles from "../css/SubscriptionModal.module.css";
 
-const API_URL = "https://anually-rent-management-backend.iamkamsy325.workers.dev";
+const API_URL = "https://anually-rent-management-backend.onrender.com";
 
 const UPGRADE_TIERS = [
   { key: "pro", name: "Pro", price: 9000, tenants: "Up to 8 tenants", fee: "3% fee" },

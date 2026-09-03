@@ -8,7 +8,7 @@ import {
 } from "react-icons/fi";
 import styles from "../css/Modals.module.css";
 
-const API_URL = "https://anually-rent-management-backend.iamkamsy325.workers.dev";
+const API_URL = "https://anually-rent-management-backend.onrender.com";
 
 export default function PayoutConnectModal({
   isOpen,

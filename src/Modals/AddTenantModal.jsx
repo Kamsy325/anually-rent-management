@@ -96,7 +96,7 @@ export default function AddTenantModal({
       setLoading(true);
 
       const response = await axios.post(
-        "https://anually-rent-management-backend.iamkamsy325.workers.dev/tenants",
+        "https://anually-rent-management-backend.onrender.com/tenants",
         {
           name: formData.name.trim(),
           apartment: formData.apartment.trim(),
