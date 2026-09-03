@@ -212,7 +212,7 @@ export default function EditProfileModal({
       const response =
         await axios.put(
 
-          "http://localhost:5000/update-profile",
+          "https://anually-rent-management-backend.iamkamsy325.workers.dev/update-profile",
 
           formData,
 

@@ -4,7 +4,7 @@ import { FiCheck, FiClock, FiAlertCircle, FiLock } from "react-icons/fi";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import styles from "../css/TenantDashboard.module.css";
 
-const API_URL = "http://localhost:5000";
+const API_URL = "https://anually-rent-management-backend.iamkamsy325.workers.dev";
 
 export default function TenantDashboard() {
   const navigate = useNavigate();

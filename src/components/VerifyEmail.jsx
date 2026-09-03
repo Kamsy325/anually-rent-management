@@ -28,7 +28,7 @@ export default function VerifyEmail() {
     const verifyToken = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/verify-email?token=${token}` //
+          `https://anually-rent-management-backend.iamkamsy325.workers.dev/verify-email?token=${token}` //
         );
 
         const { token: jwtToken, role, user } = response.data; //

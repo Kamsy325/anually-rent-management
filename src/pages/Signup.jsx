@@ -36,7 +36,7 @@ export default function Signup() {
       setLoading(true);
       setError("");
 
-      const response = await axios.post("http://localhost:5000/google", {
+      const response = await axios.post("https://anually-rent-management-backend.iamkamsy325.workers.dev/google", {
         access_token: tokenResponse.access_token,
       });
 
@@ -83,7 +83,7 @@ export default function Signup() {
     try {
       setLoading(true);
 
-      const response = await axios.post("http://localhost:5000/signup", {
+      const response = await axios.post("https://anually-rent-management-backend.iamkamsy325.workers.dev/signup", {
         first_name,
         last_name,
         email,

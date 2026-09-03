@@ -25,7 +25,7 @@ export default function SubscriptionCallback() {
 
         // Verify transaction with backend[cite: 9]
         await axios.get(
-          `http://localhost:5000/subscription/verify/${reference}`,
+          `https://anually-rent-management-backend.iamkamsy325.workers.dev/subscription/verify/${reference}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -35,7 +35,7 @@ export default function SubscriptionCallback() {
 
         // Fetch latest subscription status to sync user session
         const subRes = await axios.get(
-          `http://localhost:5000/subscription/status`,
+          `https://anually-rent-management-backend.iamkamsy325.workers.dev/subscription/status`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

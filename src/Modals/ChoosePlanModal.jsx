@@ -3,7 +3,7 @@ import axios from "axios";
 import { FiX, FiCheck } from "react-icons/fi";
 import styles from "../css/SubscriptionModal.module.css";
 
-const API_URL = "http://localhost:5000";
+const API_URL = "https://anually-rent-management-backend.iamkamsy325.workers.dev";
 
 const PLAN_TIERS = [
   {
