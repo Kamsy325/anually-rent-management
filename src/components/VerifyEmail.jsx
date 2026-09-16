@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+file:///data/user/0/com.foxdebug.acode/files/public/anually/client-side/src/components/VerifyEmail.jsximport React, { useEffect, useState, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom"; //
 import axios from "axios"; //
 import { FiCheckCircle, FiXCircle, FiLoader } from "react-icons/fi"; //

@@ -7,7 +7,6 @@ import {
   FiShield,
   FiUsers,
   FiBell,
-  FiMail,
 } from "react-icons/fi";
 import { FcGoogle } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
@@ -21,33 +20,33 @@ export default function Signup() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [emailSent, setEmailSent] = useState(false);
-  const [sentEmailAddress, setSentEmailAddress] = useState("");
   const [isPrivacyModal, setIsPrivacyModal] = useState(false);
   const [isTermsModal, setIsTermsModal] = useState(false);
 
   const navigate = useNavigate();
 
   // ==================================================
-  // GOOGLE SIGNUP HANDLER (Google accounts bypass email verification)
+  // GOOGLE SIGNUP HANDLER
   // ==================================================
   const handleGoogleSuccess = async (tokenResponse) => {
     try {
       setLoading(true);
       setError("");
 
-      const response = await axios.post("https://anually-rent-management-backend.onrender.com/google", {
-        access_token: tokenResponse.access_token,
-      });
+      const response = await axios.post(
+        "https://anually-rent-management-backend.onrender.com/google",
+        {
+          access_token: tokenResponse.access_token,
+        }
+      );
 
       const { token, role, user } = response.data;
 
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify({ ...user, role }));
-
       localStorage.setItem("isNewUser", "true");
 
-      navigate("/app");
+      navigate("/app", { replace: true });
     } catch (err) {
       console.error("GOOGLE SIGNUP ERROR:", err);
       setError(
@@ -64,7 +63,7 @@ export default function Signup() {
   });
 
   // ==================================================
-  // STANDARD SIGNUP HANDLER
+  // STANDARD SIGNUP HANDLER (INSTANT ACTIVATION)
   // ==================================================
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -73,7 +72,7 @@ export default function Signup() {
     const first_name = document.getElementById("first_name").value.trim();
     const last_name = document.getElementById("last_name").value.trim();
     const email = document.getElementById("email").value.trim();
-    const userPassword = document.getElementById("password").value;
+    const userPassword = password;
 
     if (!first_name || !last_name || !email || !userPassword) {
       setError("Please fill in all fields.");
@@ -83,16 +82,31 @@ export default function Signup() {
     try {
       setLoading(true);
 
-      const response = await axios.post("https://anually-rent-management-backend.onrender.com/signup", {
-        first_name,
-        last_name,
-        email,
-        password: userPassword,
-      });
+      const response = await axios.post(
+        "https://anually-rent-management-backend.onrender.com/signup",
+        {
+          first_name,
+          last_name,
+          email,
+          password: userPassword,
+        }
+      );
 
-      if (response.status === 200 || response.status === 201) {
-        setSentEmailAddress(email);
-        setEmailSent(true);
+      const { token, role, user } = response.data;
+
+      if (token && user) {
+        // Automatically save authentication credentials and redirect immediately
+        localStorage.setItem("token", token);
+        localStorage.setItem(
+          "user",
+          JSON.stringify({ ...user, role: role || "landlord" })
+        );
+        localStorage.setItem("isNewUser", "true");
+
+        navigate("/app", { replace: true });
+      } else {
+        // Fallback navigation if token is absent
+        navigate("/", { replace: true });
       }
     } catch (err) {
       console.error("Signup error:", err);
@@ -117,165 +131,131 @@ export default function Signup() {
             <span className={styles.logoText}>Annually</span>
           </div>
 
-          {emailSent ? (
-            /* EMAIL SENT CONFIRMATION STATE */
-            <div className={styles.formContainer} style={{ textAlign: "center" }}>
-              <div
-                style={{
-                  background: "#eff6ff",
-                  color: "#2563eb",
-                  width: "56px",
-                  height: "56px",
-                  borderRadius: "50%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  margin: "0 auto 16px auto",
-                }}
-              >
-                <FiMail size={28} />
-              </div>
-              <h1 className={styles.formTitle}>Check your email</h1>
-              <p className={styles.formSubtitle} style={{ marginTop: "8px" }}>
-                We sent a confirmation link to <strong>{sentEmailAddress}</strong>.
-                Click it to activate your account.
+          <form className={styles.formContainer} onSubmit={handleSubmit}>
+            <div>
+              <h1 className={styles.formTitle}>Create your account</h1>
+              <p className={styles.formSubtitle}>
+                Manage your properties smarter, starting today.
               </p>
-              <button
-                type="button"
-                className={styles.primaryButton}
-                onClick={() => navigate("/")}
-                style={{ marginTop: "24px" }}
-              >
-                Back to Sign In
-              </button>
             </div>
-          ) : (
-            /* REGULAR FORM STATE */
-            <form className={styles.formContainer} onSubmit={handleSubmit}>
-              <div>
-                <h1 className={styles.formTitle}>Create your account</h1>
-                <p className={styles.formSubtitle}>
-                  Manage your properties smarter, starting today.
-                </p>
-              </div>
 
-              {/* GOOGLE BUTTON */}
-              <button
-                type="button"
-                className={styles.googleButton}
-                onClick={() => googleLogin()}
-                disabled={loading}
-              >
-                <FcGoogle size={18} />
-                <span>Continue with Google</span>
-              </button>
+            {/* GOOGLE BUTTON */}
+            <button
+              type="button"
+              className={styles.googleButton}
+              onClick={() => googleLogin()}
+              disabled={loading}
+            >
+              <FcGoogle size={18} />
+              <span>Continue with Google</span>
+            </button>
 
-              <div className={styles.divider}>
-                <div className={styles.dividerLine}></div>
-                <span>or sign up with email</span>
-                <div className={styles.dividerLine}></div>
-              </div>
+            <div className={styles.divider}>
+              <div className={styles.dividerLine}></div>
+              <span>or sign up with email</span>
+              <div className={styles.dividerLine}></div>
+            </div>
 
-              <div className={styles.fields}>
-                <div className={styles.nameRow}>
-                  <div className={styles.field}>
-                    <label htmlFor="first_name">First name</label>
-                    <input
-                      id="first_name"
-                      type="text"
-                      className={styles.input}
-                      placeholder="Jane"
-                      disabled={loading}
-                    />
-                  </div>
-
-                  <div className={styles.field}>
-                    <label htmlFor="last_name">Last name</label>
-                    <input
-                      id="last_name"
-                      type="text"
-                      className={styles.input}
-                      placeholder="Smith"
-                      disabled={loading}
-                    />
-                  </div>
-                </div>
-
+            <div className={styles.fields}>
+              <div className={styles.nameRow}>
                 <div className={styles.field}>
-                  <label htmlFor="email">Email address</label>
+                  <label htmlFor="first_name">First name</label>
                   <input
-                    id="email"
-                    type="email"
+                    id="first_name"
+                    type="text"
                     className={styles.input}
-                    placeholder="jane@example.com"
+                    placeholder="Jane"
                     disabled={loading}
                   />
                 </div>
 
                 <div className={styles.field}>
-                  <label htmlFor="password">Password</label>
-                  <div className={`${styles.input} ${styles.passwordInput}`}>
-                    <input
-                      id="password"
-                      type={showPassword ? "text" : "password"}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="••••••••"
-                      disabled={loading}
-                      style={{
-                        border: "none",
-                        outline: "none",
-                        width: "100%",
-                        background: "transparent",
-                      }}
-                    />
-
-                    <button
-                      type="button"
-                      className={styles.eyeButton}
-                      onClick={() => setShowPassword(!showPassword)}
-                      disabled={loading}
-                    >
-                      {showPassword ? <FiEye size={16} /> : <FiEyeOff size={16} />}
-                    </button>
-                  </div>
+                  <label htmlFor="last_name">Last name</label>
+                  <input
+                    id="last_name"
+                    type="text"
+                    className={styles.input}
+                    placeholder="Smith"
+                    disabled={loading}
+                  />
                 </div>
               </div>
 
-              {error && (
-                <p style={{ color: "#dc2626", fontSize: "14px", marginTop: "4px" }}>
-                  {error}
-                </p>
-              )}
+              <div className={styles.field}>
+                <label htmlFor="email">Email address</label>
+                <input
+                  id="email"
+                  type="email"
+                  className={styles.input}
+                  placeholder="jane@example.com"
+                  disabled={loading}
+                />
+              </div>
 
-              <button
-                type="submit"
-                className={styles.primaryButton}
-                disabled={loading}
-              >
-                {loading ? "Creating account..." : "Create account"}
-              </button>
+              <div className={styles.field}>
+                <label htmlFor="password">Password</label>
+                <div className={`${styles.input} ${styles.passwordInput}`}>
+                  <input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    disabled={loading}
+                    style={{
+                      border: "none",
+                      outline: "none",
+                      width: "100%",
+                      background: "transparent",
+                    }}
+                  />
 
-              <p className={styles.signInText}>
-                Already have an account?{" "}
-                <button
-                  type="button"
-                  className={styles.primaryLink}
-                  onClick={() => navigate("/")}
-                  style={{
-                    border: "none",
-                    background: "none",
-                    padding: 0,
-                    cursor: "pointer",
-                  }}
-                >
-                  Sign in
-                </button>
+                  <button
+                    type="button"
+                    className={styles.eyeButton}
+                    onClick={() => setShowPassword(!showPassword)}
+                    disabled={loading}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? <FiEye size={16} /> : <FiEyeOff size={16} />}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {error && (
+              <p style={{ color: "#dc2626", fontSize: "14px", marginTop: "4px" }}>
+                {error}
               </p>
-            </form>
-          )}
+            )}
 
-          {/* TERMS FOOTER LINK IN SIGNUP */}
+            <button
+              type="submit"
+              className={styles.primaryButton}
+              disabled={loading}
+            >
+              {loading ? "Creating account..." : "Create account"}
+            </button>
+
+            <p className={styles.signInText}>
+              Already have an account?{" "}
+              <button
+                type="button"
+                className={styles.primaryLink}
+                onClick={() => navigate("/")}
+                style={{
+                  border: "none",
+                  background: "none",
+                  padding: 0,
+                  cursor: "pointer",
+                }}
+              >
+                Sign in
+              </button>
+            </p>
+          </form>
+
+          {/* TERMS FOOTER LINK */}
           <p className={styles.terms}>
             By signing up, you agree to our{" "}
             <button
@@ -297,7 +277,7 @@ export default function Signup() {
             </button>
           </p>
 
-          {/* MODALS RENDERED AT BOTTOM OF SIGNUP */}
+          {/* MODALS */}
           <PrivacyPolicyModal
             isOpen={isPrivacyModal}
             onClose={() => setIsPrivacyModal(false)}
