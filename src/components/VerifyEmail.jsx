@@ -1,24 +1,24 @@
-file:///data/user/0/com.foxdebug.acode/files/public/anually/client-side/src/components/VerifyEmail.jsximport React, { useEffect, useState, useRef } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom"; //
-import axios from "axios"; //
-import { FiCheckCircle, FiXCircle, FiLoader } from "react-icons/fi"; //
-import styles from "../css/Auth.module.css"; //
+import React, { useEffect, useState, useRef } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom"; 
+import axios from "axios"; 
+import { FiCheckCircle, FiXCircle, FiLoader } from "react-icons/fi"; 
+import styles from "../css/Auth.module.css"; 
 
 export default function VerifyEmail() {
-  const [searchParams] = useSearchParams(); //
-  const token = searchParams.get("token"); //
-  const navigate = useNavigate(); //
+  const [searchParams] = useSearchParams(); 
+  const token = searchParams.get("token"); 
+  const navigate = useNavigate(); 
 
-  const [status, setStatus] = useState("verifying"); //
-  const [errorMessage, setErrorMessage] = useState(""); //
+  const [status, setStatus] = useState("verifying"); 
+  const [errorMessage, setErrorMessage] = useState(""); 
 
-  // Ref flag to block strict mode duplicate execution
+  
   const verificationFired = useRef(false);
 
   useEffect(() => {
     if (!token) {
-      setStatus("error"); //
-      setErrorMessage("No verification token provided."); //
+      setStatus("error"); 
+      setErrorMessage("No verification token provided."); 
       return;
     }
 
@@ -28,28 +28,28 @@ export default function VerifyEmail() {
     const verifyToken = async () => {
       try {
         const response = await axios.get(
-          `https://anually-rent-management-backend.onrender.com/verify-email?token=${token}` //
+          `https:anually-rent-management-backend.onrender.com/verify-email?token=${token}` 
         );
 
-        const { token: jwtToken, role, user } = response.data; //
+        const { token: jwtToken, role, user } = response.data; 
 
-        // Store user and token in localStorage
-        localStorage.setItem("token", jwtToken); //
-        localStorage.setItem("user", JSON.stringify({ ...user, role })); //
+         
+        localStorage.setItem("token", jwtToken); 
+        localStorage.setItem("user", JSON.stringify({ ...user, role })); 
 
-        localStorage.setItem("isNewUser", "true"); //
+        localStorage.setItem("isNewUser", "true"); 
 
-        setStatus("success"); //
+        setStatus("success"); 
 
-        // Redirect to application dashboard after 2 seconds
+        
         setTimeout(() => {
-          navigate("/app", { replace: true }); //
+          navigate("/app", { replace: true }); 
         }, 2000);
       } catch (err) {
-        console.error("VERIFICATION ERROR:", err); //
-        setStatus("error"); //
+        console.error("VERIFICATION ERROR:", err); 
+        setStatus("error"); 
         setErrorMessage(
-          err.response?.data?.message || "Verification failed or token expired." //
+          err.response?.data?.message || "Verification failed or token expired." 
         );
       }
     };
