@@ -77,6 +77,16 @@ export default function EditProfileModal({
 
 
   // =====================================================
+  // CLOSE MODAL HANDLER
+  // =====================================================
+
+  const handleClose = () => {
+    if (loading) return;
+    setIsEditProfileModal(false);
+    localStorage.removeItem("isNewUser");
+  };
+
+  // =====================================================
   // LOAD USER INTO FORM
   // =====================================================
 
@@ -90,19 +100,19 @@ export default function EditProfileModal({
       setFormData({
 
         firstName:
-          user.firstName || "",
+          user.firstName || user.first_name || "",
 
         lastName:
-          user.lastName || "",
+          user.lastName || user.last_name || "",
 
         email:
           user.email || "",
 
         phone_no:
-          user.phone_no || "",
+          user.phone_no || user.phoneNo || user.phone || "",
 
         company_name:
-          user.company_name || "",
+          user.company_name || user.companyName || "",
 
         address:
           user.address || "",
@@ -233,36 +243,31 @@ export default function EditProfileModal({
       // UPDATE USER IN LAYOUT
       // ===============================
 
-      if (response.data.user) {
+      const responseUser = response.data?.user || {};
+      const updatedUser = {
+        ...user,
+        ...responseUser,
+        ...formData,
+        role: responseUser.role || user?.role || "landlord",
+      };
 
-        setUser(
-          response.data.user
-        );
+      setUser(updatedUser);
 
+      // Keep localStorage synchronized
+      localStorage.setItem(
+        "user",
+        JSON.stringify(updatedUser)
+      );
 
-        // Keep localStorage synchronized
-
-        localStorage.setItem(
-          "user",
-          JSON.stringify(
-            response.data.user
-          )
-        );
-
-      }
-
+      localStorage.removeItem("isNewUser");
 
       setSuccess(
         "Profile updated successfully."
       );
 
-
       // Close after successful update
-
       setTimeout(() => {
-
         setIsEditProfileModal(false);
-
       }, 700);
 
 
@@ -323,9 +328,7 @@ export default function EditProfileModal({
 
     <div
       className={styles.overlay}
-      onMouseDown={() =>
-        setIsEditProfileModal(false)
-      }
+      onMouseDown={handleClose}
     >
 
       <div
@@ -358,9 +361,7 @@ export default function EditProfileModal({
           <button
             type="button"
             className={styles.closeButton}
-            onClick={() =>
-              setIsEditProfileModal(false)
-            }
+            onClick={handleClose}
             disabled={loading}
           >
 
@@ -676,9 +677,7 @@ export default function EditProfileModal({
               className={
                 styles.cancelButton
               }
-              onClick={() =>
-                setIsEditProfileModal(false)
-              }
+              onClick={handleClose}
               disabled={loading}
             >
 

@@ -41,12 +41,20 @@ export default function Signup() {
       );
 
       const { token, role, user } = response.data;
+      const userRole = String(role || user?.role || "landlord").trim().toLowerCase();
+      const finalUser = {
+        ...user,
+        role: userRole,
+        firstName: user?.firstName || user?.first_name || "",
+        lastName: user?.lastName || user?.last_name || "",
+        email: user?.email || "",
+      };
 
       localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify({ ...user, role }));
+      localStorage.setItem("user", JSON.stringify(finalUser));
       localStorage.setItem("isNewUser", "true");
 
-      navigate("/app", { replace: true });
+      navigate("/app", { replace: true, state: { openEditProfile: true } });
     } catch (err) {
       console.error("GOOGLE SIGNUP ERROR:", err);
       setError(
@@ -96,14 +104,23 @@ export default function Signup() {
 
       if (token && user) {
         // Automatically save authentication credentials and redirect immediately
+        const userRole = String(role || user.role || "landlord").trim().toLowerCase();
+        const finalUser = {
+          ...user,
+          role: userRole,
+          firstName: user.firstName || user.first_name || first_name,
+          lastName: user.lastName || user.last_name || last_name,
+          email: user.email || email,
+        };
+
         localStorage.setItem("token", token);
         localStorage.setItem(
           "user",
-          JSON.stringify({ ...user, role: role || "landlord" })
+          JSON.stringify(finalUser)
         );
         localStorage.setItem("isNewUser", "true");
 
-        navigate("/app", { replace: true });
+        navigate("/app", { replace: true, state: { openEditProfile: true } });
       } else {
         // Fallback navigation if token is absent
         navigate("/", { replace: true });

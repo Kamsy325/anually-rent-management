@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
 import BottomNav from "./BottomNav";
@@ -17,6 +17,7 @@ const API_URL = "https://anually-rent-management-backend.onrender.com";
 
 function Layout() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -30,7 +31,18 @@ function Layout() {
   const [isAddTenantModal, setIsAddTenantModal] = useState(false);
   const [isEditTenantModal, setIsEditTenantModal] = useState(false);
   const [isDeleteTenantModal, setIsDeleteTenantModal] = useState(false);
-  const [isEditProfileModal, setIsEditProfileModal] = useState(false);
+  const [isEditProfileModal, setIsEditProfileModal] = useState(() => {
+    try {
+      const isNew = localStorage.getItem("isNewUser") === "true";
+      if (isNew) {
+        localStorage.removeItem("isNewUser");
+        return true;
+      }
+    } catch {
+      // fallback
+    }
+    return false;
+  });
   const [isLogoutModal, setIsLogoutModal] = useState(false);
   const [isPayoutConnectModal, setIsPayoutConnectModal] = useState(false);
   const [isUpgradeModal, setIsUpgradeModal] = useState(false);
@@ -67,6 +79,16 @@ function Layout() {
       setLoading(false);
     }
   }, [navigate]);
+
+  // Open edit profile modal immediately after first signup if navigated with state
+  useEffect(() => {
+    if (location.state?.openEditProfile) {
+      setIsEditProfileModal(true);
+      if (window.history?.replaceState) {
+        window.history.replaceState({}, document.title);
+      }
+    }
+  }, [location.state]);
 
   const getTenants = async () => {
     if (!user || user.role !== "landlord") return;
@@ -323,18 +345,21 @@ function Layout() {
               checkPayoutStatus();
             }}
           />
-          <EditProfileModal
-            isEditProfileModal={isEditProfileModal}
-            setIsEditProfileModal={setIsEditProfileModal}
-            user={user}
-            setUser={setUser}
-          />
           <UpgradePlanModal
             isOpen={isUpgradeModal}
             onClose={() => setIsUpgradeModal(false)}
             currentPlan={user?.subscription?.plan_type || user?.subscription?.effective_plan || "free"}
           />
         </>
+      )}
+
+      {user && (
+        <EditProfileModal
+          isEditProfileModal={isEditProfileModal}
+          setIsEditProfileModal={setIsEditProfileModal}
+          user={user}
+          setUser={setUser}
+        />
       )}
 
       <LogoutModal

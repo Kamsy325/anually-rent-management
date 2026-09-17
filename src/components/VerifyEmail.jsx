@@ -33,17 +33,24 @@ export default function VerifyEmail() {
 
         const { token: jwtToken, role, user } = response.data; 
 
-         
+        const userRole = String(role || user?.role || "landlord").trim().toLowerCase();
+        const finalUser = {
+          ...user,
+          role: userRole,
+          firstName: user?.firstName || user?.first_name || "",
+          lastName: user?.lastName || user?.last_name || "",
+          email: user?.email || "",
+        };
+
         localStorage.setItem("token", jwtToken); 
-        localStorage.setItem("user", JSON.stringify({ ...user, role })); 
+        localStorage.setItem("user", JSON.stringify(finalUser)); 
 
         localStorage.setItem("isNewUser", "true"); 
 
         setStatus("success"); 
 
-        
         setTimeout(() => {
-          navigate("/app", { replace: true }); 
+          navigate("/app", { replace: true, state: { openEditProfile: true } }); 
         }, 2000);
       } catch (err) {
         console.error("VERIFICATION ERROR:", err); 
