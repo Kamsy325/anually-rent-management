@@ -1,417 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@100;200;300;400;500;600;700;800;900&display=swap");
 
-
-/* =========================================
-   NAVBAR POPUP WRAPPER
-========================================= */
-
-.navbarPopupWrapper {
-  position: relative;
-}
-
-
-/* =========================================
-   NOTIFICATION PANEL
-========================================= */
-
-.notificationPanel {
-  position: absolute;
-
-  top: calc(100% + 12px);
-  right: 0;
-
-  width: 360px;
-
-  background-color: var(--color-surface);
-
-  border: 1px solid var(--color-border);
-
-  border-radius: var(--radius-md);
-
-  box-shadow:
-    0 10px 30px rgba(15, 23, 42, 0.08),
-    0 2px 8px rgba(15, 23, 42, 0.04);
-
-  z-index: 1000;
-
-  overflow: hidden;
-}
-
-
-/* =========================================
-   NOTIFICATION HEADER
-========================================= */
-
-.notificationHeader {
-  display: flex;
-
-  align-items: flex-start;
-  justify-content: space-between;
-
-  padding: 18px 18px 16px;
-
-  border-bottom: 1px solid var(--color-border);
-}
-
-.notificationHeader h3 {
-  font-size: 16px;
-
-  font-weight: 600;
-
-  color: var(--color-foreground);
-
-  margin-bottom: 3px;
-}
-
-.notificationHeader p {
-  font-size: 12px;
-
-  color: var(--color-muted-foreground);
-}
-
-
-/* =========================================
-   CLOSE BUTTON
-========================================= */
-
-.closePopupButton {
-  width: 30px;
-  height: 30px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border-radius: var(--radius-sm);
-
-  color: var(--color-muted-foreground);
-
-  background: transparent;
-
-  cursor: pointer;
-
-  transition:
-    background-color var(--transition-duration)
-      var(--transition-timing),
-    color var(--transition-duration)
-      var(--transition-timing);
-}
-
-.closePopupButton:hover {
-  background-color: var(--color-background);
-
-  color: var(--color-foreground);
-}
-
-
-/* =========================================
-   NOTIFICATION LIST
-========================================= */
-
-.notificationList {
-  display: flex;
-
-  flex-direction: column;
-}
-
-
-/* =========================================
-   NOTIFICATION ITEM
-========================================= */
-
-.notificationItem {
-  display: flex;
-
-  gap: 12px;
-
-  padding: 16px 18px;
-
-  border-bottom: 1px solid var(--color-border);
-
-  cursor: pointer;
-
-  transition:
-    background-color var(--transition-duration)
-      var(--transition-timing);
-}
-
-.notificationItem:hover {
-  background-color: var(--color-background);
-}
-
-
-/* =========================================
-   NOTIFICATION ICON
-========================================= */
-
-.notificationIcon {
-  width: 34px;
-  height: 34px;
-
-  flex-shrink: 0;
-
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
-
-  border-radius: 9999px;
-}
-
-.notificationIconBlue {
-  background-color: var(--color-secondary);
-
-  color: var(--color-primary);
-}
-
-.notificationIconOrange {
-  background-color: #fff7ed;
-
-  color: #ea580c;
-}
-
-.notificationIconRed {
-  background-color: #fef2f2;
-
-  color: #dc2626;
-}
-
-
-/* =========================================
-   NOTIFICATION CONTENT
-========================================= */
-
-.notificationContent {
-  min-width: 0;
-
-  display: flex;
-
-  flex-direction: column;
-}
-
-.notificationContent p {
-  font-size: 13px;
-
-  font-weight: 600;
-
-  color: var(--color-foreground);
-
-  margin-bottom: 3px;
-}
-
-.notificationContent span {
-  font-size: 12px;
-
-  line-height: 1.45;
-
-  color: var(--color-muted-foreground);
-}
-
-.notificationContent small {
-  margin-top: 5px;
-
-  font-size: 11px;
-
-  color: #94a3b8;
-}
-
-
-/* =========================================
-   VIEW NOTIFICATIONS
-========================================= */
-
-.viewNotificationsButton {
-  width: 100%;
-
-  padding: 13px 18px;
-
-  background-color: transparent;
-
-  color: var(--color-primary);
-
-  font-size: 13px;
-
-  font-weight: 600;
-
-  text-align: center;
-
-  cursor: pointer;
-
-  transition:
-    background-color var(--transition-duration)
-      var(--transition-timing);
-}
-
-.viewNotificationsButton:hover {
-  background-color: var(--color-background);
-}
-
-
-/* =========================================
-   PROFILE MENU
-========================================= */
-
-.profileMenu {
-  position: absolute;
-
-  top: calc(100% + 12px);
-  right: 0;
-
-  width: 250px;
-
-  background-color: var(--color-surface);
-
-  border: 1px solid var(--color-border);
-
-  border-radius: var(--radius-md);
-
-  box-shadow:
-    0 10px 30px rgba(15, 23, 42, 0.08),
-    0 2px 8px rgba(15, 23, 42, 0.04);
-
-  padding: 8px;
-
-  z-index: 1000;
-}
-
-
-/* =========================================
-   PROFILE MENU HEADER
-========================================= */
-
-.profileMenuHeader {
-  display: flex;
-
-  align-items: center;
-
-  gap: 10px;
-
-  padding: 10px 8px 12px;
-}
-
-.profileMenuAvatar {
-  width: 38px;
-  height: 38px;
-
-  flex-shrink: 0;
-
-  border-radius: 9999px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  background-color: var(--color-secondary);
-
-  color: var(--color-primary);
-
-  font-size: 14px;
-
-  font-weight: 600;
-}
-
-.profileMenuName {
-  font-size: 13px;
-
-  font-weight: 600;
-
-  color: var(--color-foreground);
-
-  margin-bottom: 2px;
-}
-
-.profileMenuEmail {
-  display: block;
-
-  max-width: 175px;
-
-  overflow: hidden;
-
-  text-overflow: ellipsis;
-
-  white-space: nowrap;
-
-  font-size: 11px;
-
-  color: var(--color-muted-foreground);
-}
-
-
-/* =========================================
-   PROFILE MENU DIVIDER
-========================================= */
-
-.profileMenuDivider {
-  height: 1px;
-
-  background-color: var(--color-border);
-
-  margin: 4px 0;
-}
-
-
-/* =========================================
-   PROFILE MENU ITEM
-========================================= */
-
-.profileMenuItem {
-  width: 100%;
-
-  display: flex;
-
-  align-items: center;
-
-  gap: 11px;
-
-  padding: 10px 9px;
-
-  border-radius: var(--radius-sm);
-
-  background: transparent;
-
-  color: var(--color-foreground);
-
-  font-size: 13px;
-
-  font-weight: 500;
-
-  text-align: left;
-
-  cursor: pointer;
-
-  transition:
-    background-color var(--transition-duration)
-      var(--transition-timing),
-    color var(--transition-duration)
-      var(--transition-timing);
-}
-
-.profileMenuItem:hover {
-  background-color: var(--color-background);
-}
-
-.profileMenuItem svg {
-  flex-shrink: 0;
-
-  color: var(--color-muted-foreground);
-}
-
-
-/* =========================================
-   LOGOUT
-========================================= */
-
-.logoutMenuItem {
-  color: #dc2626;
-}
-
-.logoutMenuItem svg {
-  color: #dc2626;
-}
-
-.logoutMenuItem:hover {
-  background-color: #fef2f2;
-}
 :global(:root) {
   --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
@@ -689,7 +277,7 @@
   display: flex;
   flex-direction: column;
 
-  padding: 24px 0;
+  padding: 16px 0;
 
   font-family: var(--font-body);
 
@@ -702,13 +290,14 @@
 
 .sidebarNav {
   flex: 1;
+  min-height: 0;
 
   padding: 0 12px;
 
   display: flex;
   flex-direction: column;
 
-  gap: 4px;
+  gap: 2px;
 }
 
 .sidebarItem {
@@ -719,7 +308,7 @@
 
   gap: 12px;
 
-  padding: 12px 16px;
+  padding: 8px 12px;
 
   border-radius: var(--radius-md);
 
@@ -746,14 +335,16 @@
 }
 
 .sidebarFooter {
-  padding: 16px 12px 0;
+  padding: 12px 12px 0;
 
   border-top: 1px solid var(--color-border);
+
+  flex-shrink: 0;
 }
 
 .logoutItem {
-  padding-left: 16px;
-  padding-right: 16px;
+  padding-left: 12px;
+  padding-right: 12px;
 }
 
 /* =========================================
@@ -782,7 +373,6 @@
   position: relative;
 }
 
-
 /* =========================================
    NOTIFICATION PANEL
 ========================================= */
@@ -809,7 +399,6 @@
 
   overflow: hidden;
 }
-
 
 /* =========================================
    NOTIFICATION HEADER
@@ -841,7 +430,6 @@
 
   color: var(--color-muted-foreground);
 }
-
 
 /* =========================================
    CLOSE BUTTON
@@ -876,7 +464,6 @@
   color: var(--color-foreground);
 }
 
-
 /* =========================================
    NOTIFICATION LIST
 ========================================= */
@@ -886,7 +473,6 @@
 
   flex-direction: column;
 }
-
 
 /* =========================================
    NOTIFICATION ITEM
@@ -911,7 +497,6 @@
 .notificationItem:hover {
   background-color: var(--color-background);
 }
-
 
 /* =========================================
    NOTIFICATION ICON
@@ -948,7 +533,6 @@
 
   color: #dc2626;
 }
-
 
 /* =========================================
    NOTIFICATION CONTENT
@@ -988,7 +572,6 @@
   color: #94a3b8;
 }
 
-
 /* =========================================
    VIEW NOTIFICATIONS
 ========================================= */
@@ -1019,7 +602,6 @@
   background-color: var(--color-background);
 }
 
-
 /* =========================================
    PROFILE MENU
 ========================================= */
@@ -1046,7 +628,6 @@
 
   z-index: 1000;
 }
-
 
 /* =========================================
    PROFILE MENU HEADER
@@ -1109,7 +690,6 @@
   color: var(--color-muted-foreground);
 }
 
-
 /* =========================================
    PROFILE MENU DIVIDER
 ========================================= */
@@ -1121,7 +701,6 @@
 
   margin: 4px 0;
 }
-
 
 /* =========================================
    PROFILE MENU ITEM
@@ -1168,7 +747,6 @@
 
   color: var(--color-muted-foreground);
 }
-
 
 /* =========================================
    LOGOUT
@@ -1229,24 +807,6 @@
   margin: 0;
   font-size: 1.25rem;
   font-weight: 600;
-  color: #111827;
-}
-
-.closePopupButton {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  color: #6b7280;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 4px;
-  border-radius: 6px;
-  transition: background-color 0.2s, color 0.2s;
-}
-
-.closePopupButton:hover {
-  background-color: #f3f4f6;
   color: #111827;
 }
 
@@ -1328,5 +888,4 @@
   .addTenantBtn {
     display: none;
   }
-  
 }
