@@ -675,13 +675,10 @@
 ========================================= */
 
 .sidebar {
-  position: fixed;
-  left: 0;
-  bottom: 0;
   width: 224px;
   min-width: 224px;
 
-  height: calc(100% - 64px);
+  height: 100%;
 
   flex-shrink: 0;
 
@@ -768,7 +765,6 @@
 
   min-width: 0;
   min-height: 0;
-  width: calc(100% - 224px);
 
   height: 100%;
 
