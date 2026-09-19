@@ -768,6 +768,7 @@
 
   min-width: 0;
   min-height: 0;
+  width: calc(100% - 224px);
 
   height: 100%;
 
