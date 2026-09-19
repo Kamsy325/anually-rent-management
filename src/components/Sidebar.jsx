@@ -6,7 +6,7 @@ import {
   FiCreditCard,
   FiLogOut,
 } from "react-icons/fi";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import styles from "../css/Layout.module.css";
 
 const Sidebar = ({ user, onPaymentClick, onLogoutClick }) => {
@@ -16,24 +16,40 @@ const Sidebar = ({ user, onPaymentClick, onLogoutClick }) => {
     <aside className={styles.sidebar}>
       <nav className={styles.sidebarNav}>
         {/* DASHBOARD */}
-        <Link to="/app" className={styles.sidebarItem}>
+        <NavLink
+          to="/app"
+          end
+          className={({ isActive }) =>
+            `${styles.sidebarItem} ${isActive ? styles.sidebarItemActive : ""}`
+          }
+        >
           <FiGrid size={18} />
           <span>Dashboard</span>
-        </Link>
+        </NavLink>
 
         {/* TENANTS (Landlords Only) */}
         {isLandlord && (
-          <Link to="/app/tenants" className={styles.sidebarItem}>
+          <NavLink
+            to="/app/tenants"
+            className={({ isActive }) =>
+              `${styles.sidebarItem} ${isActive ? styles.sidebarItemActive : ""}`
+            }
+          >
             <FiUsers size={18} />
             <span>Tenants</span>
-          </Link>
+          </NavLink>
         )}
 
         {/* PROFILE */}
-        <Link to="/app/profile" className={styles.sidebarItem}>
+        <NavLink
+          to="/app/profile"
+          className={({ isActive }) =>
+            `${styles.sidebarItem} ${isActive ? styles.sidebarItemActive : ""}`
+          }
+        >
           <FiUser size={18} />
           <span>Profile</span>
-        </Link>
+        </NavLink>
 
         {/* PAYMENT / PAYOUT (Landlords Only) */}
         {isLandlord && (

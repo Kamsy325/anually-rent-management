@@ -196,6 +196,8 @@
   font-weight: 500;
 
   cursor: pointer;
+
+  transition: opacity 0.2s ease, background-color 0.2s ease;
 }
 
 
@@ -330,6 +332,29 @@
   font-weight: 500;
 
   cursor: pointer;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  transition: opacity 0.2s ease, background-color 0.2s ease, cursor 0.2s ease;
+}
+
+.primaryButton:hover:not(:disabled) {
+  background: #1b6be5;
+}
+
+.primaryButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.googleButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 

@@ -1,7 +1,6 @@
 .dashboard {
-  flex: 1;
+  width: 100%;
   min-width: 0;
-  overflow-y: auto;
   background-color: #f5f9fe;
   font-family: "DM Sans", sans-serif;
   color: #0f172a;
