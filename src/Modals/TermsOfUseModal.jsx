@@ -32,22 +32,27 @@ const TermsOfUseModal = ({ isOpen, onClose }) => {
             You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account.
           </p>
 
-          <h3>3. One-Time Payment & Plan Access</h3>
+          <h3>3. Transparent Fee Structure (No Subscriptions & Unlimited Tenants)</h3>
           <p>
-            All plan purchases are processed as one-time payments for a fixed access period. Plans are non-recurring and will not automatically charge your account upon expiration.
+            The platform does not charge recurring subscription plans, upfront tier payments, or tenant listing limits. Landlords can add and manage unlimited tenants. The sole platform fee is a flat 3% fee on all rent transactions processed through the service.
           </p>
 
-          <h3>4. No Refund & No Proration Policy</h3>
+          <h3>4. Payment Processing (Paystack) Fees Borne by Landlord</h3>
           <p>
-            All payments are strictly final and non-refundable. We do not issue refunds, partial credits, or prorated adjustments for unused time, plan changes, or early account closure.
+            Both the flat 3% platform fee and all third-party payment processing fees (Paystack platform charges) are paid by the landlord and deducted automatically from the rent payout. Tenants pay only the exact rent amount specified with no additional platform transaction fees.
           </p>
 
-          <h3>5. Acceptable Use</h3>
+          <h3>5. Payouts & Disbursements</h3>
+          <p>
+            Net rent proceeds (gross rent minus the 3% platform fee and applicable Paystack transaction fees) are settled directly to the landlord's connected bank account via Paystack. All processed disbursements are final.
+          </p>
+
+          <h3>6. Acceptable Use</h3>
           <p>
             You agree not to use the service for any illegal or unauthorized purpose, nor violate any laws in your jurisdiction while using the platform.
           </p>
 
-          <h3>6. Limitation of Liability</h3>
+          <h3>7. Limitation of Liability</h3>
           <p>
             The service is provided on an "AS IS" and "AS AVAILABLE" basis. We shall not be liable for any indirect, incidental, or consequential damages resulting from your use of the platform.
           </p>

@@ -8,27 +8,17 @@ import {
   FiShield,
   FiLogOut,
   FiX,
-  FiTrendingUp,
 } from "react-icons/fi";
 import styles from "../css/Layout.module.css";
 
 const API_URL = "https://anually-rent-management-backend.onrender.com";
 
-const PLAN_LIMITS = {
-  free: 5,
-  pro: 8,
-  premium: 15,
-  business: Infinity,
-};
-
 const Navbar = ({
   setIsAddTenantModal,
-  onOpenUpgradeModal,
   onOpenPayoutModal,
   user,
   onUpdateUser,
   tenants = [],
-  subscription = { plan_type: "free" },
   onOpenTermsModal,
   onOpenPrivacyModal,
   onLogoutClick,
@@ -56,18 +46,6 @@ const Navbar = ({
   const isLandlord = user?.role === "landlord";
 
   const handleAddTenantClick = () => {
-    console.log("--- [NAVBAR] Add Tenant Button Clicked ---");
-    console.log("[NAVBAR] Props received:", {
-      isPayoutConnected,
-      user_paystack_subaccount_code: user?.paystack_subaccount_code,
-      user_paystack_connected: user?.paystack_connected,
-      tenants_count: tenants.length,
-      subscription_plan: subscription?.plan_type,
-      has_setIsAddTenantModal: typeof setIsAddTenantModal === "function",
-      has_onOpenPayoutModal: typeof onOpenPayoutModal === "function",
-      has_onOpenUpgradeModal: typeof onOpenUpgradeModal === "function",
-    });
-
     const hasPaystackSubaccount =
       isPayoutConnected ||
       Boolean(user?.paystack_subaccount_code) ||
@@ -80,17 +58,8 @@ const Navbar = ({
       return;
     }
 
-    const currentPlan = (subscription?.plan_type || "free").toLowerCase();
-    const maxTenants = PLAN_LIMITS[currentPlan] ?? PLAN_LIMITS.free;
-
-    if (tenants.length >= maxTenants) {
-      if (onOpenUpgradeModal) {
-        onOpenUpgradeModal();
-      }
-    } else {
-      if (typeof setIsAddTenantModal === "function") {
-        setIsAddTenantModal(true);
-      }
+    if (typeof setIsAddTenantModal === "function") {
+      setIsAddTenantModal(true);
     }
   };
 
@@ -389,20 +358,6 @@ const Navbar = ({
                   >
                     <FiEdit2 size={17} />
                     <span>Edit Profile</span>
-                  </button>
-                )}
-
-                {isLandlord && (
-                  <button
-                    type="button"
-                    className={styles.profileMenuItem}
-                    onClick={() => {
-                      setShowProfileMenu(false);
-                      if (onOpenUpgradeModal) onOpenUpgradeModal();
-                    }}
-                  >
-                    <FiTrendingUp size={17} />
-                    <span>Subscriptions</span>
                   </button>
                 )}
 

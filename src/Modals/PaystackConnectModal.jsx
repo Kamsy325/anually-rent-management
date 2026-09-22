@@ -190,7 +190,7 @@ export default function PayoutConnectModal({
           <div>
             <h2 className={styles.modalTitle}>Payout Settings</h2>
             <p className={styles.modalDescription}>
-              Connect your bank account to receive tenant rent payments.
+              Connect your bank account to receive rent payments directly. Only a flat 3% fee per transaction; no subscriptions or tenant limits.
             </p>
           </div>
 
@@ -342,9 +342,7 @@ export default function PayoutConnectModal({
                 lineHeight: "1.5",
               }}
             >
-              Your bank details are sent securely to Paystack. Your account number
-              is not stored in your database. We only store the Paystack payout
-              connection.
+              Your bank details are sent securely to Paystack. The only fee is a flat 3% platform fee on transactions, with payment gateway (Paystack) processing fees paid by the landlord from payouts. No subscriptions or tenant limits.
             </p>
 
             <div className={styles.modalFooter}>

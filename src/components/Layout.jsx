@@ -11,7 +11,6 @@ import DeleteTenantModal from "../Modals/DeleteTenantModal";
 import EditProfileModal from "../Modals/EditProfileModal";
 import LogoutModal from "../Modals/LogoutModal";
 import PayoutConnectModal from "../Modals/PaystackConnectModal";
-import UpgradePlanModal from "../Modals/UpgradePlanModal";
 
 const API_URL = "https://anually-rent-management-backend.onrender.com";
 
@@ -45,7 +44,6 @@ function Layout() {
   });
   const [isLogoutModal, setIsLogoutModal] = useState(false);
   const [isPayoutConnectModal, setIsPayoutConnectModal] = useState(false);
-  const [isUpgradeModal, setIsUpgradeModal] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -137,36 +135,10 @@ function Layout() {
     }
   };
 
-  const fetchSubscriptionStatus = async () => {
-    if (!user || user.role !== "landlord") return;
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
-    try {
-      const response = await axios.get(`${API_URL}/subscription/status`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      setUser((prev) => {
-        if (!prev) return prev;
-        const updatedUser = { ...prev, subscription: response.data };
-
-        const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
-        storedUser.subscription = response.data;
-        localStorage.setItem("user", JSON.stringify(storedUser));
-
-        return updatedUser;
-      });
-    } catch (error) {
-      console.error("Failed to fetch subscription status", error);
-    }
-  };
-
   useEffect(() => {
     if (!loading && user && user.role === "landlord") {
       getTenants();
       checkPayoutStatus();
-      fetchSubscriptionStatus();
     }
   }, [loading, user?.id]);
 
@@ -183,12 +155,6 @@ function Layout() {
 
     if (!hasPayout) {
       setIsPayoutConnectModal(true);
-      return;
-    }
-
-    const maxTenants = user?.subscription?.maxTenants ?? 5;
-    if (maxTenants !== null && tenants.length >= maxTenants) {
-      setIsUpgradeModal(true);
       return;
     }
 
@@ -280,11 +246,9 @@ function Layout() {
       <Navbar
         setIsAddTenantModal={handleOpenAddTenant}
         onOpenPayoutModal={() => setIsPayoutConnectModal(true)}
-        onOpenUpgradeModal={() => setIsUpgradeModal(true)}
         isPayoutConnected={isPayoutConnected}
         user={user}
         tenants={tenants}
-        subscription={user?.subscription || { plan_type: "free" }}
         onLogoutClick={() => setIsLogoutModal(true)}
       />
 
@@ -344,11 +308,6 @@ function Layout() {
               setIsPayoutConnected(true);
               checkPayoutStatus();
             }}
-          />
-          <UpgradePlanModal
-            isOpen={isUpgradeModal}
-            onClose={() => setIsUpgradeModal(false)}
-            currentPlan={user?.subscription?.plan_type || user?.subscription?.effective_plan || "free"}
           />
         </>
       )}

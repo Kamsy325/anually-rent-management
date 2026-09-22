@@ -15,7 +15,6 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import PaymentCallback from './pages/PaymentCallback'
 import VerifyEmail from './components/VerifyEmail'
-import SubscriptionCallback from "./pages/SubscriptionCallback"
 
 
 function AppHome() {
@@ -69,7 +68,6 @@ const router = createBrowserRouter(
       />
 
       <Route path="/verify-email" element={<VerifyEmail />} />
-      <Route path="/subscription/callback" element={<SubscriptionCallback />} />
       <Route
         path="app"
         element={<Layout />}

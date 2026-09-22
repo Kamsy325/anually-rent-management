@@ -49,7 +49,7 @@ export default function TenantDashboard() {
         setIsLocked(true);
         setLockedMessage(
           response.data?.message ||
-            "Your account is locked, your landlord's plan is expired."
+            "Your account is currently locked. Please contact your property manager for assistance."
         );
         return;
       }
@@ -67,7 +67,7 @@ export default function TenantDashboard() {
         setIsLocked(true);
         setLockedMessage(
           err.response?.data?.message ||
-            "Your account is locked, your landlord's plan is expired."
+            "Your account is currently locked. Please contact your property manager for assistance."
         );
         return;
       }
@@ -167,7 +167,7 @@ export default function TenantDashboard() {
               margin: "0 auto",
             }}
           >
-            {lockedMessage || "Your landlord's plan is expired."}
+            {lockedMessage || "Your account is currently locked. Please contact your property manager."}
           </p>
         </div>
       </div>

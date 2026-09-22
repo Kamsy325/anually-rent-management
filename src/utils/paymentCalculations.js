@@ -507,3 +507,44 @@ export function formatMoney(
     }
   )}`;
 }
+
+
+// =====================================================
+// TRANSACTION & PLATFORM FEE CALCULATIONS
+// The only fee is a flat 3% platform fee on all rent
+// transactions, with platform/Paystack payment processing
+// fees paid by the landlord (deducted from gross payout).
+// No subscriptions or tenant limits.
+// =====================================================
+
+export const PLATFORM_FEE_PERCENTAGE = 0.03; // 3% flat fee
+
+export function calculateTransactionFees(rentAmount) {
+  const amount = Number(rentAmount || 0);
+  const platformFee = Math.round(amount * PLATFORM_FEE_PERCENTAGE);
+
+  // Paystack processing fee estimate (1.5% + NGN 100, capped at NGN 2000)
+  let paystackFee = 0;
+  if (amount > 0) {
+    paystackFee = amount * 0.015;
+    if (amount >= 2500) {
+      paystackFee += 100;
+    }
+    if (paystackFee > 2000) {
+      paystackFee = 2000;
+    }
+    paystackFee = Math.round(paystackFee);
+  }
+
+  const totalLandlordFees = platformFee + paystackFee;
+  const netLandlordPayout = Math.max(0, amount - totalLandlordFees);
+
+  return {
+    grossAmount: amount,
+    platformFeePercentage: 3,
+    platformFee,
+    paystackFee,
+    totalLandlordFees,
+    netLandlordPayout,
+  };
+}

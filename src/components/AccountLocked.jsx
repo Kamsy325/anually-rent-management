@@ -13,7 +13,7 @@ export default function AccountLocked({ message }) {
         <h1>Your Account Is Locked</h1>
         <p>
           {message ||
-            "Your landlord's plan is expired. Please contact your property manager to renew their subscription."}
+            "Your account is currently locked. Please contact your property manager for assistance."}
         </p>
       </div>
     </div>
