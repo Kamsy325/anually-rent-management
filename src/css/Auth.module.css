@@ -309,6 +309,109 @@
   cursor: pointer;
 }
 
+.intervalOptions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  width: 100%;
+}
+
+.intervalButton {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 10px 12px;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.intervalButton:hover:not(:disabled) {
+  border-color: #cbd5e1;
+  background: #f1f5f9;
+}
+
+.intervalButtonActive {
+  border-color: #277eff;
+  background: #eff6ff;
+  box-shadow: 0 0 0 1px #277eff inset;
+}
+
+.intervalHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.intervalIndicator {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1.5px solid #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: #ffffff;
+}
+
+.intervalButtonActive .intervalIndicator {
+  border-color: #277eff;
+  background: #277eff;
+}
+
+.intervalIndicatorDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ffffff;
+}
+
+.intervalTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f1c2e;
+}
+
+.intervalButtonActive .intervalTitle {
+  color: #1b6be5;
+}
+
+.intervalDesc {
+  font-size: 11px;
+  color: #64748b;
+  line-height: 1.3;
+  margin-left: 20px;
+}
+
+.intervalButtonActive .intervalDesc {
+  color: #2563eb;
+}
+
+.intervalSelect {
+  min-height: 42px;
+  width: 100%;
+  padding: 10px 12px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 15px;
+  color: #0f1c2e;
+  outline: none;
+  cursor: pointer;
+}
+
+.intervalSelect:focus {
+  border-color: #277eff;
+  background: #ffffff;
+}
+
 
 /* =========================================================
    PRIMARY BUTTON

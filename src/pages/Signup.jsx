@@ -7,6 +7,7 @@ import {
   FiShield,
   FiUsers,
   FiBell,
+  FiCalendar,
 } from "react-icons/fi";
 import { FcGoogle } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
@@ -18,6 +19,7 @@ import TermsOfUseModal from "../Modals/TermsOfUseModal";
 export default function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState("");
+  const [leaseInterval, setLeaseInterval] = useState("monthly");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [isPrivacyModal, setIsPrivacyModal] = useState(false);
@@ -48,13 +50,19 @@ export default function Signup() {
         firstName: user?.firstName || user?.first_name || "",
         lastName: user?.lastName || user?.last_name || "",
         email: user?.email || "",
+        lease_interval: user?.lease_interval || leaseInterval || "monthly",
+        rent_interval: user?.rent_interval || user?.lease_interval || leaseInterval || "monthly",
       };
 
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(finalUser));
       localStorage.setItem("isNewUser", "true");
+      localStorage.setItem("promptLeaseInterval", "true");
 
-      navigate("/app", { replace: true, state: { openEditProfile: true } });
+      navigate("/app", {
+        replace: true,
+        state: { openEditProfile: true, promptLeaseInterval: true },
+      });
     } catch (err) {
       console.error("GOOGLE SIGNUP ERROR:", err);
       setError(
@@ -97,6 +105,8 @@ export default function Signup() {
           last_name,
           email,
           password: userPassword,
+          lease_interval: leaseInterval,
+          rent_interval: leaseInterval,
         }
       );
 
@@ -111,6 +121,8 @@ export default function Signup() {
           firstName: user.firstName || user.first_name || first_name,
           lastName: user.lastName || user.last_name || last_name,
           email: user.email || email,
+          lease_interval: user.lease_interval || leaseInterval || "monthly",
+          rent_interval: user.rent_interval || user.lease_interval || leaseInterval || "monthly",
         };
 
         localStorage.setItem("token", token);
@@ -235,6 +247,62 @@ export default function Signup() {
                     aria-label={showPassword ? "Hide password" : "Show password"}
                   >
                     {showPassword ? <FiEye size={16} /> : <FiEyeOff size={16} />}
+                  </button>
+                </div>
+              </div>
+
+              {/* RENT / LEASE INTERVAL */}
+              <div className={styles.field}>
+                <label htmlFor="lease_interval">Rent / Lease Interval</label>
+                <div className={styles.intervalOptions}>
+                  <button
+                    type="button"
+                    id="lease_interval_monthly"
+                    className={`${styles.intervalButton} ${
+                      leaseInterval === "monthly"
+                        ? styles.intervalButtonActive
+                        : ""
+                    }`}
+                    onClick={() => setLeaseInterval("monthly")}
+                    disabled={loading}
+                    aria-pressed={leaseInterval === "monthly"}
+                  >
+                    <div className={styles.intervalHeader}>
+                      <span className={styles.intervalIndicator}>
+                        {leaseInterval === "monthly" && (
+                          <span className={styles.intervalIndicatorDot} />
+                        )}
+                      </span>
+                      <span className={styles.intervalTitle}>Monthly</span>
+                    </div>
+                    <span className={styles.intervalDesc}>
+                      Collect rent every month
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    id="lease_interval_annually"
+                    className={`${styles.intervalButton} ${
+                      leaseInterval === "annually"
+                        ? styles.intervalButtonActive
+                        : ""
+                    }`}
+                    onClick={() => setLeaseInterval("annually")}
+                    disabled={loading}
+                    aria-pressed={leaseInterval === "annually"}
+                  >
+                    <div className={styles.intervalHeader}>
+                      <span className={styles.intervalIndicator}>
+                        {leaseInterval === "annually" && (
+                          <span className={styles.intervalIndicatorDot} />
+                        )}
+                      </span>
+                      <span className={styles.intervalTitle}>Annually</span>
+                    </div>
+                    <span className={styles.intervalDesc}>
+                      Collect rent once a year
+                    </span>
                   </button>
                 </div>
               </div>

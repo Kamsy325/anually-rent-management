@@ -45,7 +45,6 @@ export default function PayoutConnectModal({
       if (response.data.connected) {
         setConnected(true);
         setPayout(response.data.payout);
-        if (onConnectedSuccess) onConnectedSuccess();
       } else {
         setConnected(false);
         setPayout(null);
@@ -190,7 +189,7 @@ export default function PayoutConnectModal({
           <div>
             <h2 className={styles.modalTitle}>Payout Settings</h2>
             <p className={styles.modalDescription}>
-              Connect your bank account to receive rent payments directly. Only a flat 3% fee per transaction; no subscriptions or tenant limits.
+              Connect your bank account to receive rent payments directly. Only a flat 1.5% fee per transaction; no subscriptions or tenant limits.
             </p>
           </div>
 
@@ -342,7 +341,7 @@ export default function PayoutConnectModal({
                 lineHeight: "1.5",
               }}
             >
-              Your bank details are sent securely to Paystack. The only fee is a flat 3% platform fee on transactions, with payment gateway (Paystack) processing fees paid by the landlord from payouts. No subscriptions or tenant limits.
+              Your bank details are sent securely to Paystack. The only fee is a flat 1.5% platform fee on transactions, with payment gateway (Paystack) processing fees paid by the landlord from payouts. No subscriptions or tenant limits.
             </p>
 
             <div className={styles.modalFooter}>

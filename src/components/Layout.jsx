@@ -30,18 +30,7 @@ function Layout() {
   const [isAddTenantModal, setIsAddTenantModal] = useState(false);
   const [isEditTenantModal, setIsEditTenantModal] = useState(false);
   const [isDeleteTenantModal, setIsDeleteTenantModal] = useState(false);
-  const [isEditProfileModal, setIsEditProfileModal] = useState(() => {
-    try {
-      const isNew = localStorage.getItem("isNewUser") === "true";
-      if (isNew) {
-        localStorage.removeItem("isNewUser");
-        return true;
-      }
-    } catch {
-      // fallback
-    }
-    return false;
-  });
+  const [isEditProfileModal, setIsEditProfileModal] = useState(false);
   const [isLogoutModal, setIsLogoutModal] = useState(false);
   const [isPayoutConnectModal, setIsPayoutConnectModal] = useState(false);
 
@@ -78,15 +67,23 @@ function Layout() {
     }
   }, [navigate]);
 
-  // Open edit profile modal immediately after first signup if navigated with state
+  // Open edit profile modal immediately after signup (including new Google signups)
   useEffect(() => {
-    if (location.state?.openEditProfile) {
+    if (!user || user.role !== "landlord") return;
+
+    const shouldOpenProfile =
+      location.state?.openEditProfile === true ||
+      location.state?.promptLeaseInterval === true ||
+      localStorage.getItem("isNewUser") === "true" ||
+      localStorage.getItem("promptLeaseInterval") === "true";
+
+    if (shouldOpenProfile) {
       setIsEditProfileModal(true);
       if (window.history?.replaceState) {
         window.history.replaceState({}, document.title);
       }
     }
-  }, [location.state]);
+  }, [location.state, user]);
 
   const getTenants = async () => {
     if (!user || user.role !== "landlord") return;
@@ -249,6 +246,7 @@ function Layout() {
         isPayoutConnected={isPayoutConnected}
         user={user}
         tenants={tenants}
+        onOpenEditProfileModal={() => setIsEditProfileModal(true)}
         onLogoutClick={() => setIsLogoutModal(true)}
       />
 
@@ -268,6 +266,9 @@ function Layout() {
               tenantsLoading,
               getTenants,
               setIsEditProfileModal,
+              openEditProfile: () => setIsEditProfileModal(true),
+              openAddTenant: () => handleOpenAddTenant(true),
+              setIsAddTenantModal: handleOpenAddTenant,
               openEditTenant: handleOpenEditTenant,
               openDeleteTenant: handleOpenDeleteTenant,
             }}
@@ -307,6 +308,8 @@ function Layout() {
             onConnectedSuccess={() => {
               setIsPayoutConnected(true);
               checkPayoutStatus();
+              setIsPayoutConnectModal(false);
+              setIsAddTenantModal(true);
             }}
           />
         </>

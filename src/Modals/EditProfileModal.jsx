@@ -76,6 +76,11 @@ export default function EditProfileModal({
   ] = useState("");
 
 
+  const [
+    isPromptingInterval,
+    setIsPromptingInterval
+  ] = useState(false);
+
   // =====================================================
   // CLOSE MODAL HANDLER
   // =====================================================
@@ -84,6 +89,7 @@ export default function EditProfileModal({
     if (loading) return;
     setIsEditProfileModal(false);
     localStorage.removeItem("isNewUser");
+    localStorage.removeItem("promptLeaseInterval");
   };
 
   // =====================================================
@@ -91,6 +97,12 @@ export default function EditProfileModal({
   // =====================================================
 
   useEffect(() => {
+    if (isEditProfileModal) {
+      const isPrompt =
+        localStorage.getItem("promptLeaseInterval") === "true" ||
+        localStorage.getItem("isNewUser") === "true";
+      setIsPromptingInterval(Boolean(isPrompt));
+    }
 
     if (
       isEditProfileModal &&
@@ -260,6 +272,7 @@ export default function EditProfileModal({
       );
 
       localStorage.removeItem("isNewUser");
+      localStorage.removeItem("promptLeaseInterval");
 
       setSuccess(
         "Profile updated successfully."
@@ -348,11 +361,15 @@ export default function EditProfileModal({
           <div>
 
             <h2 className={styles.modalTitle}>
-              Edit Profile
+              {isPromptingInterval
+                ? "Welcome! Set Up Your Rent Interval"
+                : "Edit Profile"}
             </h2>
 
             <p className={styles.modalDescription}>
-              Update your personal and business information
+              {isPromptingInterval
+                ? "Please set your rent collection interval (monthly or annually) and confirm your profile."
+                : "Update your personal and business information"}
             </p>
 
           </div>
@@ -379,6 +396,48 @@ export default function EditProfileModal({
         <form
           onSubmit={handleSubmit}
         >
+
+          {isPromptingInterval && (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "flex-start",
+                gap: "12px",
+                background: "#eff6ff",
+                border: "1.5px solid #bfdbfe",
+                borderRadius: "10px",
+                padding: "14px 16px",
+                marginBottom: "20px",
+              }}
+            >
+              <FiCalendar
+                size={22}
+                style={{ color: "#2563eb", marginTop: "2px", flexShrink: 0 }}
+              />
+              <div>
+                <p
+                  style={{
+                    margin: "0 0 4px 0",
+                    fontWeight: 600,
+                    fontSize: "14px",
+                    color: "#1e40af",
+                  }}
+                >
+                  Action Required: Set Rent / Lease Interval
+                </p>
+                <p
+                  style={{
+                    margin: 0,
+                    fontSize: "13px",
+                    color: "#1e3a8a",
+                    lineHeight: 1.45,
+                  }}
+                >
+                  Please specify whether your properties follow a <strong>Monthly</strong> or <strong>Annually</strong> lease cycle. This customizes payment schedules, analytics, and due dates across your dashboard.
+                </p>
+              </div>
+            </div>
+          )}
 
           <div className={styles.formGrid}>
 
@@ -558,10 +617,27 @@ export default function EditProfileModal({
                 LEASE INTERVAL
             ================================== */}
 
-            <div className={styles.formGroup}>
+            <div
+              className={styles.formGroup}
+              style={
+                isPromptingInterval
+                  ? {
+                      background: "#f0f7ff",
+                      border: "1.5px solid #3b82f6",
+                      borderRadius: "10px",
+                      padding: "10px",
+                    }
+                  : undefined
+              }
+            >
 
-              <label>
-                Rent Interval
+              <label style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span>Rent / Lease Interval</span>
+                {isPromptingInterval && (
+                  <span style={{ color: "#2563eb", fontSize: "11px", fontWeight: "600" }}>
+                    Required
+                  </span>
+                )}
               </label>
 
               <div className={styles.inputWrapper}>
@@ -575,19 +651,24 @@ export default function EditProfileModal({
                   }
                   onChange={handleChange}
                   disabled={loading}
+                  style={{ fontWeight: "600" }}
                 >
 
                   <option value="monthly">
-                    Monthly
+                    Monthly (Rent due every month)
                   </option>
 
                   <option value="annually">
-                    Annually
+                    Annually (Rent due once a year)
                   </option>
 
                 </select>
 
               </div>
+
+              <span style={{ fontSize: "12px", color: "#64748b", marginTop: "4px", display: "block" }}>
+                Controls calculation of rent due dates and payment schedules.
+              </span>
 
             </div>
 
@@ -696,6 +777,8 @@ export default function EditProfileModal({
 
               {loading
                 ? "Saving..."
+                : isPromptingInterval
+                ? "Save & Continue"
                 : "Save Changes"}
 
             </button>

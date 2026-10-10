@@ -511,13 +511,13 @@ export function formatMoney(
 
 // =====================================================
 // TRANSACTION & PLATFORM FEE CALCULATIONS
-// The only fee is a flat 3% platform fee on all rent
+// The only fee is a flat 1.5% platform fee on all rent
 // transactions, with platform/Paystack payment processing
 // fees paid by the landlord (deducted from gross payout).
 // No subscriptions or tenant limits.
 // =====================================================
 
-export const PLATFORM_FEE_PERCENTAGE = 0.03; // 3% flat fee
+export const PLATFORM_FEE_PERCENTAGE = 0.015; // 1.5% flat fee
 
 export function calculateTransactionFees(rentAmount) {
   const amount = Number(rentAmount || 0);
@@ -541,7 +541,7 @@ export function calculateTransactionFees(rentAmount) {
 
   return {
     grossAmount: amount,
-    platformFeePercentage: 3,
+    platformFeePercentage: 1.5,
     platformFee,
     paystackFee,
     totalLandlordFees,

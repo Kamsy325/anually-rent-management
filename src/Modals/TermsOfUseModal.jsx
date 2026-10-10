@@ -34,17 +34,17 @@ const TermsOfUseModal = ({ isOpen, onClose }) => {
 
           <h3>3. Transparent Fee Structure (No Subscriptions & Unlimited Tenants)</h3>
           <p>
-            The platform does not charge recurring subscription plans, upfront tier payments, or tenant listing limits. Landlords can add and manage unlimited tenants. The sole platform fee is a flat 3% fee on all rent transactions processed through the service.
+            The platform does not charge recurring subscription plans, upfront tier payments, or tenant listing limits. Landlords can add and manage unlimited tenants. The sole platform fee is a flat 1.5% fee on all rent transactions processed through the service.
           </p>
 
           <h3>4. Payment Processing (Paystack) Fees Borne by Landlord</h3>
           <p>
-            Both the flat 3% platform fee and all third-party payment processing fees (Paystack platform charges) are paid by the landlord and deducted automatically from the rent payout. Tenants pay only the exact rent amount specified with no additional platform transaction fees.
+            Both the flat 1.5% platform fee and all third-party payment processing fees (Paystack platform charges) are paid by the landlord and deducted automatically from the rent payout. Tenants pay only the exact rent amount specified with no additional platform transaction fees.
           </p>
 
           <h3>5. Payouts & Disbursements</h3>
           <p>
-            Net rent proceeds (gross rent minus the 3% platform fee and applicable Paystack transaction fees) are settled directly to the landlord's connected bank account via Paystack. All processed disbursements are final.
+            Net rent proceeds (gross rent minus the 1.5% platform fee and applicable Paystack transaction fees) are settled directly to the landlord's connected bank account via Paystack. All processed disbursements are final.
           </p>
 
           <h3>6. Acceptable Use</h3>

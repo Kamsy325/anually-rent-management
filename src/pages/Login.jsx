@@ -56,7 +56,18 @@ export default function Login() {
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(finalUser));
 
-      navigate("/app", { replace: true });
+      // If new Google user without profile details, prompt to set lease interval
+      const isNewUser = !user?.phone_no && !user?.company_name && !user?.address;
+      if (isNewUser) {
+        localStorage.setItem("isNewUser", "true");
+        localStorage.setItem("promptLeaseInterval", "true");
+        navigate("/app", {
+          replace: true,
+          state: { openEditProfile: true, promptLeaseInterval: true },
+        });
+      } else {
+        navigate("/app", { replace: true });
+      }
     } catch (err) {
       console.error("GOOGLE LOGIN ERROR:", err);
       setError(

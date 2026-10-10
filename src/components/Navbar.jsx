@@ -21,6 +21,7 @@ const Navbar = ({
   tenants = [],
   onOpenTermsModal,
   onOpenPrivacyModal,
+  onOpenEditProfileModal,
   onLogoutClick,
   isPayoutConnected = false,
 }) => {
@@ -353,7 +354,11 @@ const Navbar = ({
                     className={styles.profileMenuItem}
                     onClick={() => {
                       setShowProfileMenu(false);
-                      setShowEditProfileModal(true);
+                      if (onOpenEditProfileModal) {
+                        onOpenEditProfileModal();
+                      } else {
+                        setShowEditProfileModal(true);
+                      }
                     }}
                   >
                     <FiEdit2 size={17} />

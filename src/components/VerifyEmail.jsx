@@ -40,6 +40,8 @@ export default function VerifyEmail() {
           firstName: user?.firstName || user?.first_name || "",
           lastName: user?.lastName || user?.last_name || "",
           email: user?.email || "",
+          lease_interval: user?.lease_interval || user?.rent_interval || "monthly",
+          rent_interval: user?.rent_interval || user?.lease_interval || "monthly",
         };
 
         localStorage.setItem("token", jwtToken); 
