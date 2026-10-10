@@ -8,6 +8,7 @@ import {
   FiLock,
   FiEye,
   FiEyeOff,
+  FiInfo,
 } from "react-icons/fi";
 import axios from "axios";
 import styles from "../css/Modals.module.css";
@@ -160,6 +161,16 @@ export default function AddTenantModal({
           </button>
         </div>
 
+        <div className={styles.infoNotice} role="note">
+          <FiInfo size={18} className={styles.infoNoticeIcon} />
+          <div className={styles.infoNoticeContent}>
+            <span className={styles.infoNoticeTitle}>Important Note</span>
+            <p className={styles.infoNoticeText}>
+              Please note down the tenant's <strong>email</strong> and <strong>password</strong>. The tenant will use these credentials to log in and make payments.
+            </p>
+          </div>
+        </div>
+
         {error && (
           <p
             role="alert"
@@ -221,6 +232,9 @@ export default function AddTenantModal({
                   required
                 />
               </div>
+              <span className={styles.fieldHint}>
+                Tenant will use this email to log in
+              </span>
             </div>
 
             <div className={styles.formGroup}>
@@ -304,6 +318,9 @@ export default function AddTenantModal({
                   {showPassword ? <FiEye size={17} /> : <FiEyeOff size={17} />}
                 </button>
               </div>
+              <span className={styles.fieldHint}>
+                Tenant will use this password to log in and make payments (min. 6 characters)
+              </span>
             </div>
           </div>
 
