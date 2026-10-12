@@ -146,9 +146,12 @@ function Layout() {
     }
 
     const hasPayout =
-      isPayoutConnected ||
-      Boolean(user?.paystack_subaccount_code) ||
-      Boolean(user?.paystack_connected);
+      Boolean(isPayoutConnected) ||
+      (Boolean(user?.paystack_subaccount_code) &&
+        String(user.paystack_subaccount_code).trim() !== "" &&
+        user.paystack_subaccount_code !== "null" &&
+        user.paystack_subaccount_code !== "undefined") ||
+      user?.paystack_connected === true;
 
     if (!hasPayout) {
       setIsPayoutConnectModal(true);
@@ -267,8 +270,6 @@ function Layout() {
               getTenants,
               setIsEditProfileModal,
               openEditProfile: () => setIsEditProfileModal(true),
-              openAddTenant: () => handleOpenAddTenant(true),
-              setIsAddTenantModal: handleOpenAddTenant,
               openEditTenant: handleOpenEditTenant,
               openDeleteTenant: handleOpenDeleteTenant,
             }}
@@ -307,6 +308,7 @@ function Layout() {
             user={user}
             onConnectedSuccess={() => {
               setIsPayoutConnected(true);
+              setUser((prev) => (prev ? { ...prev, paystack_connected: true } : prev));
               checkPayoutStatus();
               setIsPayoutConnectModal(false);
               setIsAddTenantModal(true);

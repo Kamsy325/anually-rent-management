@@ -44,7 +44,7 @@ export default function BottomNav({ user, setIsAddTenantModal, onPaymentClick })
               <button
                 type="button"
                 className={styles.fabButton}
-                onClick={setIsAddTenantModal}
+                onClick={() => setIsAddTenantModal(true)}
                 aria-label="Add Tenant"
               >
                 <FiPlus className={styles.fabIcon} />

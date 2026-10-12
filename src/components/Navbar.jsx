@@ -48,13 +48,18 @@ const Navbar = ({
 
   const handleAddTenantClick = () => {
     const hasPaystackSubaccount =
-      isPayoutConnected ||
-      Boolean(user?.paystack_subaccount_code) ||
-      Boolean(user?.paystack_connected);
+      Boolean(isPayoutConnected) ||
+      (Boolean(user?.paystack_subaccount_code) &&
+        String(user.paystack_subaccount_code).trim() !== "" &&
+        user.paystack_subaccount_code !== "null" &&
+        user.paystack_subaccount_code !== "undefined") ||
+      user?.paystack_connected === true;
 
     if (!hasPaystackSubaccount) {
       if (onOpenPayoutModal) {
         onOpenPayoutModal();
+      } else if (typeof setIsAddTenantModal === "function") {
+        setIsAddTenantModal(true);
       }
       return;
     }

@@ -32,9 +32,9 @@ const TermsOfUseModal = ({ isOpen, onClose }) => {
             You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account.
           </p>
 
-          <h3>3. Transparent Fee Structure (No Subscriptions & Unlimited Tenants)</h3>
+          <h3>3. Fee Structure</h3>
           <p>
-            The platform does not charge recurring subscription plans, upfront tier payments, or tenant listing limits. Landlords can add and manage unlimited tenants. The sole platform fee is a flat 1.5% fee on all rent transactions processed through the service.
+            The sole platform fee is a flat 1.5% fee on all rent transactions processed through the service.
           </p>
 
           <h3>4. Payment Processing (Paystack) Fees Borne by Landlord</h3>
