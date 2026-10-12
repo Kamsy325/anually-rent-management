@@ -384,6 +384,7 @@
   right: 0;
 
   width: 360px;
+  max-width: calc(100vw - 24px);
 
   background-color: var(--color-surface);
 
@@ -432,6 +433,72 @@
 }
 
 /* =========================================
+   DESKTOP ALERT BANNER
+========================================= */
+
+.desktopAlertBanner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 18px;
+  background-color: #eff6ff;
+  border-bottom: 1px solid #bfdbfe;
+}
+
+.desktopAlertText {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.desktopAlertTitle {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1e40af;
+}
+
+.desktopAlertSubtitle {
+  font-size: 11px;
+  color: #3b82f6;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.enableDesktopBtn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  background-color: var(--color-primary);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background-color var(--transition-duration) var(--transition-timing);
+}
+
+.enableDesktopBtn:hover {
+  background-color: #2563eb;
+}
+
+.desktopEnabledBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: #16a34a;
+  font-weight: 500;
+  background-color: #dcfce7;
+  padding: 2px 7px;
+  border-radius: 9999px;
+}
+
+/* =========================================
    CLOSE BUTTON
 ========================================= */
 
@@ -472,6 +539,12 @@
   display: flex;
 
   flex-direction: column;
+
+  max-height: 380px;
+
+  overflow-y: auto;
+
+  -webkit-overflow-scrolling: touch;
 }
 
 /* =========================================
@@ -887,5 +960,29 @@
 
   .addTenantBtn {
     display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0 16px;
+  }
+
+  .notificationPanel {
+    position: fixed;
+    top: 68px;
+    right: 12px;
+    left: auto;
+    width: calc(100vw - 24px);
+    max-width: 360px;
+  }
+
+  .profileMenu {
+    position: fixed;
+    top: 68px;
+    right: 12px;
+    left: auto;
+    width: calc(100vw - 24px);
+    max-width: 260px;
   }
 }

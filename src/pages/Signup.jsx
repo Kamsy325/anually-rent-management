@@ -15,6 +15,7 @@ import axios from "axios";
 import styles from "../css/Auth.module.css";
 import PrivacyPolicyModal from "../Modals/PrivacyPolicyModal";
 import TermsOfUseModal from "../Modals/TermsOfUseModal";
+import { requestNotificationPermission } from "../utils/desktopNotifications";
 
 export default function Signup() {
   const [showPassword, setShowPassword] = useState(false);
@@ -58,6 +59,12 @@ export default function Signup() {
       localStorage.setItem("user", JSON.stringify(finalUser));
       localStorage.setItem("isNewUser", "true");
       localStorage.setItem("promptLeaseInterval", "true");
+
+      try {
+        await requestNotificationPermission();
+      } catch {
+        // Continue navigation
+      }
 
       navigate("/app", {
         replace: true,
@@ -131,6 +138,12 @@ export default function Signup() {
           JSON.stringify(finalUser)
         );
         localStorage.setItem("isNewUser", "true");
+
+        try {
+          await requestNotificationPermission();
+        } catch {
+          // Continue navigation
+        }
 
         navigate("/app", { replace: true, state: { openEditProfile: true } });
       } else {

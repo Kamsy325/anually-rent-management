@@ -11,6 +11,7 @@ import DeleteTenantModal from "../Modals/DeleteTenantModal";
 import EditProfileModal from "../Modals/EditProfileModal";
 import LogoutModal from "../Modals/LogoutModal";
 import PayoutConnectModal from "../Modals/PaystackConnectModal";
+import { requestNotificationPermission } from "../utils/desktopNotifications";
 
 const API_URL = "https://anually-rent-management-backend.onrender.com";
 
@@ -84,6 +85,40 @@ function Layout() {
       }
     }
   }, [location.state, user]);
+
+  // Automatically prompt for desktop notification permission after logging in
+  useEffect(() => {
+    if (!user) return;
+    if (typeof window === "undefined" || !("Notification" in window)) return;
+    if (Notification.permission !== "default") return;
+
+    const askPermission = async () => {
+      try {
+        await requestNotificationPermission();
+      } catch {
+        // Fallback to interaction listener below
+      }
+    };
+
+    const timer = setTimeout(askPermission, 800);
+
+    const handleFirstGesture = async () => {
+      window.removeEventListener("click", handleFirstGesture);
+      window.removeEventListener("keydown", handleFirstGesture);
+      if (Notification.permission === "default") {
+        await requestNotificationPermission();
+      }
+    };
+
+    window.addEventListener("click", handleFirstGesture, { once: true });
+    window.addEventListener("keydown", handleFirstGesture, { once: true });
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("click", handleFirstGesture);
+      window.removeEventListener("keydown", handleFirstGesture);
+    };
+  }, [user?.id]);
 
   const getTenants = async () => {
     if (!user || user.role !== "landlord") return;

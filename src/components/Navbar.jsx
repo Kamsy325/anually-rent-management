@@ -8,8 +8,15 @@ import {
   FiShield,
   FiLogOut,
   FiX,
+  FiCheck,
 } from "react-icons/fi";
 import styles from "../css/Layout.module.css";
+import {
+  registerServiceWorker,
+  getNotificationPermission,
+  requestNotificationPermission,
+  sendDesktopNotification,
+} from "../utils/desktopNotifications";
 
 const API_URL = "https://anually-rent-management-backend.onrender.com";
 
@@ -29,6 +36,16 @@ const Navbar = ({
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
+
+  const [desktopPermission, setDesktopPermission] = useState(() =>
+    getNotificationPermission()
+  );
+  const isInitialFetchRef = useRef(true);
+
+  useEffect(() => {
+    registerServiceWorker();
+    setDesktopPermission(getNotificationPermission());
+  }, []);
 
   const [showEditProfileModal, setShowEditProfileModal] = useState(false);
   const [profileForm, setProfileForm] = useState({
@@ -92,6 +109,7 @@ const Navbar = ({
       });
 
       const rawNotifications = res.data.notifications || [];
+      const newItemsToNotify = [];
 
       // Deduplicate using a composite key (title + message + payer name) 
       // to handle cases where the backend sends duplicate rows with different IDs.
@@ -104,24 +122,68 @@ const Navbar = ({
           n.tenant?.name ||
           "";
         
-        const compositeKey = `${n.title || ""}-${n.message || ""}-${payerName}`;
+        const compositeKey = `${n.id || ""}-${n.title || ""}-${n.message || ""}-${payerName}`;
         
         if (!uniqueMap.has(compositeKey)) {
           uniqueMap.set(compositeKey, n);
+          if (!isInitialFetchRef.current && (n.is_read === 0 || !n.is_read)) {
+            newItemsToNotify.push({ ...n, payerName });
+          }
         }
       });
 
       setNotifications(Array.from(uniqueMap.values()));
       setUnreadCount(res.data.unreadCount || 0);
+
+      // Deliver desktop notifications for new unread notifications
+      if (!isInitialFetchRef.current && newItemsToNotify.length > 0) {
+        newItemsToNotify.forEach((item) => {
+          sendDesktopNotification({
+            title: item.title || "Annually Rent Alert",
+            message: item.message || "New notification received.",
+            payerName: item.payerName,
+            id: item.id || item._id,
+            tag: `annually-alert-${item.id || item.title}`,
+            url: "/app",
+          });
+        });
+      }
+
+      isInitialFetchRef.current = false;
     } catch (err) {
       console.error("[NAVBAR] Failed to load notifications:", err);
     }
   };
 
+  const handleEnableDesktopAlerts = async () => {
+    const granted = await requestNotificationPermission();
+    setDesktopPermission(getNotificationPermission());
+    if (granted) {
+      sendDesktopNotification({
+        title: "Desktop Alerts Enabled",
+        message: "You'll now receive instant notifications when rent payments and updates occur.",
+        tag: "annually-welcome",
+        url: "/app",
+      });
+    }
+  };
+
   useEffect(() => {
     fetchNotifications();
-    const interval = setInterval(fetchNotifications, 60000);
-    return () => clearInterval(interval);
+    const interval = setInterval(fetchNotifications, 25000);
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        fetchNotifications();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, []);
 
   useEffect(() => {
@@ -247,7 +309,14 @@ const Navbar = ({
               <div className={styles.notificationPanel}>
                 <div className={styles.notificationHeader}>
                   <div>
-                    <h3>Notifications</h3>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <h3>Notifications</h3>
+                      {desktopPermission === "granted" && (
+                        <span className={styles.desktopEnabledBadge} title="Desktop alerts active">
+                          <FiCheck size={12} /> Desktop alerts on
+                        </span>
+                      )}
+                    </div>
                     <p>You have {unreadCount} unread notification(s)</p>
                   </div>
 
@@ -259,6 +328,24 @@ const Navbar = ({
                     <FiX size={16} />
                   </button>
                 </div>
+
+                {desktopPermission !== "granted" && desktopPermission !== "unsupported" && (
+                  <div className={styles.desktopAlertBanner}>
+                    <div className={styles.desktopAlertText}>
+                      <span className={styles.desktopAlertTitle}>Desktop Notifications</span>
+                      <p className={styles.desktopAlertSubtitle}>
+                        Get instant alerts on your desktop when rent is paid
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      className={styles.enableDesktopBtn}
+                      onClick={handleEnableDesktopAlerts}
+                    >
+                      Enable
+                    </button>
+                  </div>
+                )}
 
                 <div className={styles.notificationList}>
                   {notifications.length === 0 ? (

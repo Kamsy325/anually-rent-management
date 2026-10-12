@@ -14,6 +14,7 @@ import axios from "axios";
 import styles from "../css/Auth.module.css";
 import PrivacyPolicyModal from "../Modals/PrivacyPolicyModal";
 import TermsOfUseModal from "../Modals/TermsOfUseModal";
+import { requestNotificationPermission } from "../utils/desktopNotifications";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -55,6 +56,13 @@ export default function Login() {
 
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(finalUser));
+
+      // Request desktop notifications permission on user login
+      try {
+        await requestNotificationPermission();
+      } catch {
+        // Continue navigation
+      }
 
       // If new Google user without profile details, prompt to set lease interval
       const isNewUser = !user?.phone_no && !user?.company_name && !user?.address;
@@ -133,6 +141,13 @@ export default function Login() {
 
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
+
+      // Request desktop notifications permission on user login
+      try {
+        await requestNotificationPermission();
+      } catch {
+        // Continue navigation
+      }
 
       navigate("/app", { replace: true });
     } catch (err) {
