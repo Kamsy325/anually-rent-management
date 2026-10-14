@@ -267,6 +267,9 @@ export default function AddTenantModal({
                 disabled={loading}
                 required
               />
+              <span className={styles.fieldHint}>
+                Note: This is when next the rent will be due.
+              </span>
             </div>
 
             <div className={styles.formGroup}>
