@@ -618,14 +618,15 @@ export default function EditProfileModal({
             ================================== */}
 
             <div
-              className={styles.formGroup}
+              className={styles.formGroupFull}
               style={
                 isPromptingInterval
                   ? {
                       background: "#f0f7ff",
                       border: "1.5px solid #3b82f6",
                       borderRadius: "10px",
-                      padding: "10px",
+                      padding: "12px 14px",
+                      boxSizing: "border-box",
                     }
                   : undefined
               }
@@ -642,7 +643,7 @@ export default function EditProfileModal({
 
               <div className={styles.inputWrapper}>
 
-                <FiCalendar />
+                <FiCalendar style={{ flexShrink: 0 }} />
 
                 <select
                   name="lease_interval"
@@ -651,7 +652,17 @@ export default function EditProfileModal({
                   }
                   onChange={handleChange}
                   disabled={loading}
-                  style={{ fontWeight: "600" }}
+                  style={{
+                    fontWeight: "600",
+                    width: "100%",
+                    minWidth: 0,
+                    flex: 1,
+                    border: "none",
+                    outline: "none",
+                    background: "transparent",
+                    color: "inherit",
+                    cursor: "pointer",
+                  }}
                 >
 
                   <option value="monthly">
@@ -666,7 +677,7 @@ export default function EditProfileModal({
 
               </div>
 
-              <span style={{ fontSize: "12px", color: "#64748b", marginTop: "4px", display: "block" }}>
+              <span style={{ fontSize: "12px", color: "#64748b", marginTop: "4px", display: "block", lineHeight: 1.4 }}>
                 Controls calculation of rent due dates and payment schedules.
               </span>
 
