@@ -122,6 +122,12 @@ function PaymentStatusBadge({ status }) {
 }
 
 function AnalyticsCard({ title, value, change, changeType, icon }) {
+  const getChangeClass = () => {
+    if (changeType === "positive") return styles.changePositive;
+    if (changeType === "negative") return styles.changeNegative;
+    return styles.changeNeutral;
+  };
+
   return (
     <div className={styles.analyticsCard}>
       <div className={styles.analyticsHeader}>
@@ -132,13 +138,7 @@ function AnalyticsCard({ title, value, change, changeType, icon }) {
       <div className={styles.analyticsValues}>
         <p className={styles.analyticsValue}>{value}</p>
         {change && (
-          <p
-            className={`${styles.analyticsChange} ${
-              changeType === "positive"
-                ? styles.changePositive
-                : styles.changeNegative
-            }`}
-          >
+          <p className={`${styles.analyticsChange} ${getChangeClass()}`}>
             {change}
           </p>
         )}
@@ -531,11 +531,36 @@ export default function Dashboard() {
   const uniquePendingPayments = getOnePaymentPerTenant(pendingPayments);
   const uniqueOverduePayments = getOnePaymentPerTenant(overduePayments);
 
+  const now = new Date();
+  const endOfToday = new Date(now);
+  endOfToday.setHours(23, 59, 59, 999);
+
+  const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+  thirtyDaysAgo.setHours(0, 0, 0, 0);
+
   const totalRevenue = payments
-    .filter(
-      (payment) =>
-        String(payment?.status || "").toLowerCase() === "paid"
-    )
+    .filter((payment) => {
+      const isPaid = String(payment?.status || "").toLowerCase() === "paid";
+      if (!isPaid) return false;
+
+      const rawDate =
+        payment.paidDate ||
+        payment.paymentDate ||
+        payment.paid_at ||
+        payment.paidAt ||
+        payment.date ||
+        payment.createdAt ||
+        payment.created_at ||
+        payment.dueDate ||
+        payment.due_date;
+
+      if (!rawDate) return true;
+
+      const paymentDate = new Date(rawDate);
+      if (Number.isNaN(paymentDate.getTime())) return true;
+
+      return paymentDate >= thirtyDaysAgo && paymentDate <= endOfToday;
+    })
     .reduce((total, payment) => total + Number(payment.amount || 0), 0);
 
   const pendingAmount = uniquePendingPayments.reduce(
@@ -566,8 +591,10 @@ export default function Dashboard() {
 
         <div className={styles.analyticsGrid}>
           <AnalyticsCard
-            title="Total Revenue"
+            title="Total Revenue (Last 30 Days)"
             value={formatMoney(totalRevenue)}
+            change="Last 30 days"
+            changeType="neutral"
             icon={<span style={{ fontWeight: "bold" }}>₦</span>}
           />
 
